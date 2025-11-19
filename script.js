@@ -8,7 +8,7 @@ let timer;
 let timeLeft = 20;
 let userAnswers = [];
 
-const DEEPSEEK_API_KEY = 'sk-8f434f7872794ac88dc7b2bca06c8bbf';
+const DEEPSEEK_API_KEY = sk-8f434f7872794ac88dc7b2bca06c8bbf;
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/chat/completions';
 
 // Tab switching function
@@ -601,3 +601,4 @@ function backToHome() {
     document.getElementById('quiz-section').style.display = 'none';
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
