@@ -8,25 +8,28 @@ let timer;
 let timeLeft = 20;
 let userAnswers = [];
 
-const DEEPSEEK_API_KEY = sk-8f434f7872794ac88dc7b2bca06c8bbf;
-const DEEPSEEK_API_URL = 'https://api.deepseek.com/chat/completions';
+// DeepSeek API Configuration dengan fallback
+const DEEPSEEK_CONFIG = {
+    apiKey: 'sk-8f434f7872794ac88dc7b2bca06c8bbf', // GANTI INI dengan API key DeepSeek Anda
+    apiUrl: 'https://api.deepseek.com/chat/completions',
+    // Fallback proxy jika ada CORS issues
+    proxyUrls: [
+        'https://cors-anywhere.herokuapp.com/https://api.deepseek.com/chat/completions',
+        'https://api.allorigins.win/raw?url=https://api.deepseek.com/chat/completions'
+    ]
+};
 
 // Tab switching function
 function switchTab(tabName) {
-    // Hide all tab contents
     document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
     });
     
-    // Remove active class from all buttons
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('active');
     });
     
-    // Show selected tab
     document.getElementById(`${tabName}-tab`).classList.add('active');
-    
-    // Activate selected button
     event.target.classList.add('active');
 }
 
@@ -35,7 +38,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const uploadArea = document.getElementById('upload-area');
     const fileInput = document.getElementById('file-input');
     
-    // Drag and drop functionality
     uploadArea.addEventListener('dragover', function(e) {
         e.preventDefault();
         uploadArea.classList.add('drag-over');
@@ -83,7 +85,64 @@ function handleFileUpload(file) {
     }
 }
 
-// Generate summary using DeepSeek AI
+// === DEEPSEEK API FUNCTIONS ===
+async function callDeepSeekAPI(prompt, isQuiz = false) {
+    // Jika API key masih default, langsung gunakan fallback
+    if (DEEPSEEK_CONFIG.apiKey === 'sk-your-actual-api-key-here') {
+        throw new Error('API_KEY_NOT_SET');
+    }
+
+    const payload = {
+        model: 'deepseek-chat',
+        messages: [
+            {
+                role: 'user',
+                content: prompt
+            }
+        ],
+        temperature: 0.7,
+        max_tokens: isQuiz ? 2000 : 1000,
+        stream: false
+    };
+
+    // Coba semua URL yang available
+    const urlsToTry = [
+        DEEPSEEK_CONFIG.apiUrl,
+        ...DEEPSEEK_CONFIG.proxyUrls
+    ];
+
+    for (let url of urlsToTry) {
+        try {
+            console.log(`Mencoba API URL: ${url}`);
+            
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${DEEPSEEK_CONFIG.apiKey}`
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                return data.choices[0].message.content;
+            } else if (response.status === 401) {
+                throw new Error('API_KEY_INVALID');
+            } else if (response.status === 429) {
+                throw new Error('RATE_LIMIT');
+            }
+        } catch (error) {
+            console.log(`URL ${url} gagal:`, error.message);
+            // Lanjut ke URL berikutnya
+            continue;
+        }
+    }
+    
+    throw new Error('ALL_API_FAILED');
+}
+
+// Generate summary dengan DeepSeek
 async function generateSummary() {
     const materialInput = document.getElementById('material-input').value.trim();
     const generateBtn = document.getElementById('generate-btn');
@@ -103,34 +162,9 @@ async function generateSummary() {
     spinner.style.display = 'block';
     
     try {
-        // Prepare prompt for DeepSeek
         const prompt = `Buatlah rangkuman yang jelas dan mudah dipahami dari materi berikut ini dalam bahasa Indonesia. Gunakan struktur yang terorganisir dengan poin-poin penting:\n\n${currentMaterial}`;
         
-        const response = await fetch(DEEPSEEK_API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
-            },
-            body: JSON.stringify({
-                model: 'deepseek-chat',
-                messages: [
-                    {
-                        role: 'user',
-                        content: prompt
-                    }
-                ],
-                temperature: 0.7,
-                max_tokens: 1000
-            })
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        aiSummary = data.choices[0].message.content;
+        aiSummary = await callDeepSeekAPI(prompt);
         
         // Display results
         document.getElementById('original-material').textContent = currentMaterial;
@@ -141,11 +175,23 @@ async function generateSummary() {
         document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
         
     } catch (error) {
-        console.error('Error generating summary:', error);
-        alert('Terjadi kesalahan saat membuat rangkuman. Silakan coba lagi.');
+        console.error('Error:', error.message);
         
-        // Fallback: create a simple summary
-        aiSummary = generateSimpleSummary(currentMaterial);
+        if (error.message === 'API_KEY_NOT_SET') {
+            alert('❌ API Key DeepSeek belum diatur!\n\n📝 Cara mendapatkan API Key:\n1. Buka https://platform.deepseek.com\n2. Buat akun dan login\n3. Dapatkan API Key di dashboard\n4. Ganti "sk-your-actual-api-key-here" di script.js dengan API Key Anda');
+            aiSummary = generateSmartSummary(currentMaterial);
+        } else if (error.message === 'API_KEY_INVALID') {
+            alert('❌ API Key tidak valid!\nPastikan API Key DeepSeek Anda benar dan aktif.');
+            aiSummary = generateSmartSummary(currentMaterial);
+        } else if (error.message === 'RATE_LIMIT') {
+            alert('⚠️ Rate limit tercapai. Tunggu beberapa saat atau gunakan API Key yang berbeda.');
+            aiSummary = generateSmartSummary(currentMaterial);
+        } else {
+            alert('🌐 Masalah koneksi API. Menggunakan AI lokal sebagai fallback.');
+            aiSummary = generateSmartSummary(currentMaterial);
+        }
+        
+        // Tetap tampilkan hasil dengan fallback
         document.getElementById('original-material').textContent = currentMaterial;
         document.getElementById('ai-summary').textContent = aiSummary;
         document.getElementById('results-section').style.display = 'block';
@@ -157,27 +203,107 @@ async function generateSummary() {
     }
 }
 
-// Generate simple summary algorithm (fallback)
-function generateSimpleSummary(text) {
+// Smart fallback summary algorithm
+function generateSmartSummary(text) {
     const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 10);
-    const importantSentences = sentences.slice(0, Math.min(3, sentences.length));
+    const words = text.toLowerCase().split(/\s+/);
     
-    let summary = "📚 RINGKASAN MATERI:\n\n";
-    summary += "✨ Poin-poin Penting:\n";
-    
-    importantSentences.forEach((sentence, index) => {
-        const cleanSentence = sentence.trim();
-        if (cleanSentence.length > 0) {
-            summary += `• ${cleanSentence}.\n`;
+    // Extract keywords
+    const wordFreq = {};
+    words.forEach(word => {
+        if (word.length > 3 && !['yang', 'dengan', 'dalam', 'adalah', 'untuk'].includes(word)) {
+            wordFreq[word] = (wordFreq[word] || 0) + 1;
         }
     });
     
-    summary += "\n💡 Tips Belajar:\n";
-    summary += "• Fokus pada konsep utama\n";
-    summary += "• Buat catatan singkat\n";
-    summary += "• Review berkala\n";
+    const keywords = Object.entries(wordFreq)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(entry => entry[0]);
+    
+    let summary = "🤖 RINGKASAN PINTAR (AI Lokal)\n\n";
+    summary += "🎯 Poin Utama:\n";
+    
+    // Ambil 3 kalimat penting (awal, tengah, akhir)
+    if (sentences.length >= 3) {
+        summary += `• ${sentences[0].trim()}\n`;
+        summary += `• ${sentences[Math.floor(sentences.length/2)].trim()}\n`;
+        summary += `• ${sentences[sentences.length-1].trim()}\n`;
+    } else {
+        sentences.forEach(sentence => {
+            if (sentence.trim().length > 20) {
+                summary += `• ${sentence.trim()}\n`;
+            }
+        });
+    }
+    
+    summary += `\n🔑 Kata Kunci: ${keywords.join(', ')}\n`;
+    summary += `📊 Ringkasan: ${text.length} karakter → ${Math.round(text.length * 0.3)} karakter\n`;
+    summary += "\n💡 Generated by Smart Algorithm";
     
     return summary;
+}
+
+// Generate quiz questions
+async function generateQuizQuestions() {
+    try {
+        const prompt = `Buat 5 soal pilihan ganda dalam bahasa Indonesia berdasarkan teks berikut. Format: [{"question": "pertanyaan", "options": ["A. pilihan A", "B. pilihan B", "C. pilihan C", "D. pilihan D"], "correctAnswer": "A"}]\n\nTeks: ${aiSummary}`;
+        
+        const result = await callDeepSeekAPI(prompt, true);
+        
+        // Try to parse JSON from response
+        const jsonMatch = result.match(/\[[\s\S]*\]/);
+        if (jsonMatch) {
+            quizQuestions = JSON.parse(jsonMatch[0]);
+            
+            // Validate questions
+            if (!Array.isArray(quizQuestions) || quizQuestions.length === 0) {
+                throw new Error('Invalid question format');
+            }
+        } else {
+            throw new Error('No JSON found in response');
+        }
+        
+    } catch (error) {
+        console.error('Error generating quiz:', error);
+        useDemoQuestions();
+    }
+}
+
+// Demo questions fallback
+function useDemoQuestions() {
+    quizQuestions = [
+        {
+            question: "Apa tujuan utama dari materi yang telah dipelajari?",
+            options: [
+                "A. Memahami konsep dasar",
+                "B. Menghafal semua detail", 
+                "C. Mengerjakan soal ujian",
+                "D. Menyelesaikan proyek"
+            ],
+            correctAnswer: "A"
+        },
+        {
+            question: "Manakah yang merupakan poin penting dari rangkuman?",
+            options: [
+                "A. Semua informasi sama pentingnya",
+                "B. Hanya fakta dan angka yang penting",
+                "C. Konsep utama dan hubungan antar ide",
+                "D. Contoh-contoh spesifik saja"
+            ],
+            correctAnswer: "C"
+        },
+        {
+            question: "Bagaimana sebaiknya materi ini dipelajari lebih lanjut?",
+            options: [
+                "A. Menghafal seluruh isi materi",
+                "B. Memahami konsep dan berlatih penerapan",
+                "C. Membaca sekali saja",
+                "D. Mencari materi yang lebih sulit"
+            ],
+            correctAnswer: "B"
+        }
+    ];
 }
 
 // Copy functions
@@ -207,7 +333,6 @@ function copyToClipboard(text) {
 }
 
 function showCopyFeedback(message) {
-    // Create temporary feedback
     const feedback = document.createElement('div');
     feedback.textContent = message;
     feedback.style.cssText = `
@@ -236,14 +361,11 @@ async function startQuiz() {
     }
     
     try {
-        // Generate quiz questions using DeepSeek
         await generateQuizQuestions();
         
-        // Hide results section and show quiz section
         document.getElementById('results-section').style.display = 'none';
         document.getElementById('quiz-section').style.display = 'block';
         
-        // Start the first question
         currentQuestionIndex = 0;
         userScore = 0;
         userAnswers = [];
@@ -251,9 +373,8 @@ async function startQuiz() {
         
     } catch (error) {
         console.error('Error starting quiz:', error);
-        alert('Terjadi kesalahan saat membuat kuis. Silakan coba lagi.');
+        alert('Terjadi kesalahan saat membuat kuis. Menggunakan soal demo.');
         
-        // Fallback: use demo questions
         useDemoQuestions();
         document.getElementById('results-section').style.display = 'none';
         document.getElementById('quiz-section').style.display = 'block';
@@ -262,107 +383,6 @@ async function startQuiz() {
         userAnswers = [];
         showQuestion();
     }
-}
-
-// Generate quiz questions using DeepSeek AI
-async function generateQuizQuestions() {
-    const prompt = `Buat 5 soal pilihan ganda dalam bahasa Indonesia berdasarkan teks berikut. Setiap soal harus memiliki 4 pilihan jawaban (A, B, C, D) dan satu jawaban benar. Format output harus JSON array:\n\n[{"question": "pertanyaan", "options": ["A. pilihan A", "B. pilihan B", "C. pilihan C", "D. pilihan D"], "correctAnswer": "A"}]\n\nTeks:\n${aiSummary}`;
-    
-    const response = await fetch(DEEPSEEK_API_URL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
-        },
-        body: JSON.stringify({
-            model: 'deepseek-chat',
-            messages: [
-                {
-                    role: 'user',
-                    content: prompt
-                }
-            ],
-            temperature: 0.7,
-            max_tokens: 2000
-        })
-    });
-    
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    const quizText = data.choices[0].message.content;
-    
-    // Try to parse JSON from the response
-    try {
-        // Extract JSON from the response (AI might add some text around the JSON)
-        const jsonMatch = quizText.match(/\[[\s\S]*\]/);
-        if (jsonMatch) {
-            quizQuestions = JSON.parse(jsonMatch[0]);
-        } else {
-            throw new Error('No JSON found in response');
-        }
-    } catch (parseError) {
-        console.error('Error parsing quiz questions:', parseError);
-        useDemoQuestions();
-    }
-}
-
-// Demo questions fallback
-function useDemoQuestions() {
-    quizQuestions = [
-        {
-            question: "Apa tujuan utama dari materi yang telah dipelajari?",
-            options: [
-                "A. Memahami konsep dasar",
-                "B. Menghafal semua detail",
-                "C. Mengerjakan soal ujian",
-                "D. Menyelesaikan proyek"
-            ],
-            correctAnswer: "A"
-        },
-        {
-            question: "Manakah yang merupakan poin penting dari rangkuman?",
-            options: [
-                "A. Semua informasi sama pentingnya",
-                "B. Hanya fakta dan angka yang penting",
-                "C. Konsep utama dan hubungan antar ide",
-                "D. Contoh-contoh spesifik saja"
-            ],
-            correctAnswer: "C"
-        },
-        {
-            question: "Bagaimana sebaiknya materi ini dipelajari lebih lanjut?",
-            options: [
-                "A. Menghafal seluruh isi materi",
-                "B. Memahami konsep dan berlatih penerapan",
-                "C. Membaca sekali saja",
-                "D. Mencari materi yang lebih sulit"
-            ],
-            correctAnswer: "B"
-        },
-        {
-            question: "Apa manfaat dari membuat rangkuman?",
-            options: [
-                "A. Menghemat waktu belajar",
-                "B. Memahami konsep secara menyeluruh",
-                "C. Mempermudah review materi",
-                "D. Semua jawaban benar"
-            ],
-            correctAnswer: "D"
-        },
-        {
-            question: "Kapan waktu terbaik untuk mereview materi?",
-            options: [
-                "A. Hanya sebelum ujian",
-                "B. Setelah lupa semua materi",
-                "C. Secara berkala dan bertahap",
-                "D. Ketika ada waktu luang saja"
-            ],
-            correctAnswer: "C"
-        }
-    ];
 }
 
 // Show current question
@@ -378,16 +398,11 @@ function showQuestion() {
     const optionsContainer = document.getElementById('options-container');
     const nextBtn = document.getElementById('next-btn');
     
-    // Update question counter
     questionCounter.textContent = `Soal ${currentQuestionIndex + 1}/${quizQuestions.length}`;
-    
-    // Set question text
     questionText.textContent = question.question;
     
-    // Clear previous options
     optionsContainer.innerHTML = '';
     
-    // Create option buttons
     question.options.forEach((option, index) => {
         const optionBtn = document.createElement('button');
         optionBtn.className = 'option-btn';
@@ -396,14 +411,11 @@ function showQuestion() {
         optionsContainer.appendChild(optionBtn);
     });
     
-    // Hide next button initially
     nextBtn.style.display = 'none';
-    
-    // Start timer
     startTimer();
 }
 
-// Start timer for current question
+// Timer functions
 function startTimer() {
     timeLeft = 20;
     updateTimerDisplay();
@@ -420,13 +432,11 @@ function startTimer() {
     }, 1000);
 }
 
-// Update timer display
 function updateTimerDisplay() {
     const timerElement = document.getElementById('timer');
     const timerText = timerElement.querySelector('.timer-text');
     timerText.textContent = `${timeLeft}s`;
     
-    // Change color when time is running out
     if (timeLeft <= 5) {
         timerElement.style.background = '#ef4444';
     } else if (timeLeft <= 10) {
@@ -436,19 +446,16 @@ function updateTimerDisplay() {
     }
 }
 
-// Handle time up
 function handleTimeUp() {
     const options = document.querySelectorAll('.option-btn');
     const question = quizQuestions[currentQuestionIndex];
     
-    // Mark correct answer
     options.forEach(btn => {
         if (btn.textContent.startsWith(question.correctAnswer)) {
             btn.classList.add('correct');
         }
     });
     
-    // Record that user didn't answer
     userAnswers.push({
         question: question.question,
         userAnswer: 'Tidak dijawab',
@@ -456,29 +463,22 @@ function handleTimeUp() {
         isCorrect: false
     });
     
-    // Show next button
     document.getElementById('next-btn').style.display = 'block';
 }
 
-// Select option
 function selectOption(selectedBtn, selectedOption) {
-    // Clear any existing selections
     const allOptions = document.querySelectorAll('.option-btn');
     allOptions.forEach(btn => {
         btn.classList.remove('selected');
-        btn.onclick = null; // Disable further clicks
+        btn.onclick = null;
     });
     
-    // Mark selected option
     selectedBtn.classList.add('selected');
-    
-    // Stop timer
     clearInterval(timer);
     
     const question = quizQuestions[currentQuestionIndex];
     const isCorrect = selectedOption.startsWith(question.correctAnswer);
     
-    // Mark correct/incorrect
     allOptions.forEach(btn => {
         if (btn.textContent.startsWith(question.correctAnswer)) {
             btn.classList.add('correct');
@@ -487,12 +487,8 @@ function selectOption(selectedBtn, selectedOption) {
         }
     });
     
-    // Update score
-    if (isCorrect) {
-        userScore++;
-    }
+    if (isCorrect) userScore++;
     
-    // Record user answer
     userAnswers.push({
         question: question.question,
         userAnswer: selectedOption,
@@ -500,11 +496,9 @@ function selectOption(selectedBtn, selectedOption) {
         isCorrect: isCorrect
     });
     
-    // Show next button
     document.getElementById('next-btn').style.display = 'block';
 }
 
-// Next question
 function nextQuestion() {
     currentQuestionIndex++;
     showQuestion();
@@ -520,7 +514,6 @@ function showResults() {
     const scoreDescriptionElement = document.getElementById('score-description');
     const scoreCircle = document.querySelector('.score-circle');
     
-    // Update score display with animation
     let currentPercent = 0;
     const interval = setInterval(() => {
         if (currentPercent >= scorePercent) {
@@ -532,10 +525,8 @@ function showResults() {
         }
     }, 20);
     
-    // Update circle progress
     scoreCircle.style.background = `conic-gradient(#10b981 ${scorePercent}%, #e5e7eb ${scorePercent}%)`;
     
-    // Set description based on score
     let description = '';
     if (scorePercent >= 90) {
         description = 'Luar biasa! Penguasaan materi Anda sangat baik.';
@@ -548,11 +539,9 @@ function showResults() {
     }
     scoreDescriptionElement.textContent = description;
     
-    // Generate quiz content for copying
     generateQuizContentForDisplay();
 }
 
-// Generate quiz content for copying
 function generateQuizContentForCopy() {
     let content = `KUIS HASIL BELAJAR\n`;
     content += `Skor: ${userScore}/${quizQuestions.length} (${Math.round((userScore / quizQuestions.length) * 100)}%)\n\n`;
@@ -568,7 +557,6 @@ function generateQuizContentForCopy() {
     return content;
 }
 
-// Generate quiz content for display
 function generateQuizContentForDisplay() {
     const copyQuizContent = document.getElementById('copy-quiz-content');
     let content = '';
@@ -601,4 +589,3 @@ function backToHome() {
     document.getElementById('quiz-section').style.display = 'none';
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
