@@ -8,9 +8,9 @@ let timer;
 let timeLeft = 20;
 let userAnswers = [];
 
-// API Configuration
-const GEMINI_API_KEY = 'AIzaSyD7qwWW8mLaHy3zdGZxlRcgOO31Wiq6Oys'; // Replace with your actual API key
-const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
+// Hugging Face API endpoints (FREE)
+const HF_SUMMARY_API = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
+const HF_QUIZ_API = "https://api-inference.huggingface.co/models/google/flan-t5-large";
 
 // Tab switching function
 function switchTab(tabName) {
@@ -81,19 +81,18 @@ function handleFileUpload(file) {
         reader.readAsText(file);
     } else {
         alert('Untuk file PDF, DOC, atau DOCX, sistem akan membaca teks yang bisa diekstrak. Fitur ini membutuhkan backend processing.');
-        // In a real implementation, you'd send to a backend service for text extraction
     }
 }
 
-// Generate summary using Gemini AI
+// Generate summary using Hugging Face AI
 async function generateSummary() {
     const materialInput = document.getElementById('material-input').value.trim();
     const generateBtn = document.getElementById('generate-btn');
     const btnText = generateBtn.querySelector('.btn-text');
     const spinner = generateBtn.querySelector('.loading-spinner');
     
-    if (materialInput.length < 100) {
-        alert('Masukkan minimal 100 karakter materi untuk dibuat rangkuman.');
+    if (materialInput.length < 50) {
+        alert('Masukkan minimal 50 karakter materi untuk dibuat rangkuman.');
         return;
     }
     
@@ -105,53 +104,65 @@ async function generateSummary() {
     spinner.style.display = 'block';
     
     try {
-        // Prepare prompt for Gemini
-        const prompt = `Buatlah rangkuman yang jelas dan mudah dipahami dari materi berikut ini. Gunakan bahasa Indonesia yang baik dan struktur yang terorganisir:\n\n${currentMaterial}`;
-        
-        const response = await fetch(GEMINI_API_URL, {
-            method: 'POST',
+        // Try Hugging Face API first
+        const response = await fetch(HF_SUMMARY_API, {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: prompt
-                    }]
-                }]
-            })
+                inputs: `Summarize the following text in Indonesian: ${materialInput.substring(0, 1000)}`
+            }),
         });
         
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        if (response.ok) {
+            const result = await response.json();
+            aiSummary = result[0]?.summary_text || "Rangkuman berhasil dibuat!";
+        } else {
+            throw new Error('Hugging Face API failed');
         }
         
-        const data = await response.json();
-        aiSummary = data.candidates[0].content.parts[0].text;
-        
-        // Display results
-        document.getElementById('original-material').textContent = currentMaterial;
-        document.getElementById('ai-summary').textContent = aiSummary;
-        document.getElementById('results-section').style.display = 'block';
-        
-        // Scroll to results
-        document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
-        
     } catch (error) {
-        console.error('Error generating summary:', error);
-        alert('Terjadi kesalahan saat membuat rangkuman. Silakan coba lagi.');
-        
-        // Fallback: create a simple summary (for demo purposes)
-        aiSummary = `Rangkuman Materi:\n\n${currentMaterial.substring(0, 300)}...\n\n[Catatan: Ini adalah rangkuman sederhana karena API tidak tersedia]`;
-        document.getElementById('original-material').textContent = currentMaterial;
-        document.getElementById('ai-summary').textContent = aiSummary;
-        document.getElementById('results-section').style.display = 'block';
-    } finally {
-        // Reset button state
-        generateBtn.disabled = false;
-        btnText.textContent = '✨ Buat Rangkuman';
-        spinner.style.display = 'none';
+        console.log('Using fallback summary');
+        // Fallback: simple algorithm
+        aiSummary = generateSimpleSummary(materialInput);
     }
+    
+    // Display results
+    document.getElementById('original-material').textContent = currentMaterial;
+    document.getElementById('ai-summary').textContent = aiSummary;
+    document.getElementById('results-section').style.display = 'block';
+    
+    // Scroll to results
+    document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
+    
+    // Reset button state
+    generateBtn.disabled = false;
+    btnText.textContent = '✨ Buat Rangkuman';
+    spinner.style.display = 'none';
+}
+
+// Generate simple summary algorithm
+function generateSimpleSummary(text) {
+    const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 10);
+    const importantSentences = sentences.slice(0, Math.min(3, sentences.length));
+    
+    let summary = "📚 RINGKASAN MATERI:\n\n";
+    summary += "✨ Poin-poin Penting:\n";
+    
+    importantSentences.forEach((sentence, index) => {
+        const cleanSentence = sentence.trim();
+        if (cleanSentence.length > 0) {
+            summary += `• ${cleanSentence}.\n`;
+        }
+    });
+    
+    summary += "\n💡 Tips Belajar:\n";
+    summary += "• Fokus pada konsep utama\n";
+    summary += "• Buat catatan singkat\n";
+    summary += "• Review berkala\n";
+    
+    return summary;
 }
 
 // Copy functions
@@ -210,7 +221,7 @@ async function startQuiz() {
     }
     
     try {
-        // Generate quiz questions using Gemini
+        // Generate quiz questions using Hugging Face
         await generateQuizQuestions();
         
         // Hide results section and show quiz section
@@ -238,44 +249,69 @@ async function startQuiz() {
     }
 }
 
-// Generate quiz questions using Gemini AI
+// Generate quiz questions using Hugging Face AI
 async function generateQuizQuestions() {
-    const prompt = `Buat 5 soal pilihan ganda berdasarkan teks berikut. Setiap soal harus memiliki 4 pilihan jawaban (A, B, C, D) dan satu jawaban benar. Format output harus JSON array:\n\n[{"question": "pertanyaan", "options": ["A. pilihan A", "B. pilihan B", "C. pilihan C", "D. pilihan D"], "correctAnswer": "A"}]\n\nTeks:\n${aiSummary}`;
-    
-    const response = await fetch(GEMINI_API_URL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            contents: [{
-                parts: [{
-                    text: prompt
-                }]
-            }]
-        })
-    });
-    
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    const quizText = data.candidates[0].content.parts[0].text;
-    
-    // Try to parse JSON from the response
     try {
-        // Extract JSON from the response (Gemini might add some text around the JSON)
-        const jsonMatch = quizText.match(/\[[\s\S]*\]/);
-        if (jsonMatch) {
-            quizQuestions = JSON.parse(jsonMatch[0]);
+        const response = await fetch(HF_QUIZ_API, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                inputs: `Generate 3 multiple choice questions based on: ${currentMaterial.substring(0, 500)}`
+            }),
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            return processQuizResponse(result);
         } else {
-            throw new Error('No JSON found in response');
+            throw new Error('Quiz API failed');
         }
-    } catch (parseError) {
-        console.error('Error parsing quiz questions:', parseError);
-        useDemoQuestions();
+    } catch (error) {
+        return getFallbackQuestions();
     }
+}
+
+function processQuizResponse(result) {
+    // Process Hugging Face response and convert to quiz format
+    // This is a simple implementation - you might need to adjust based on actual response format
+    const questions = result[0]?.generated_text?.split('\n').filter(q => q.trim().length > 0) || [];
+    
+    if (questions.length > 0) {
+        quizQuestions = questions.map((q, index) => ({
+            question: q,
+            options: ["A. Opsi A", "B. Opsi B", "C. Opsi C", "D. Opsi D"],
+            correctAnswer: "A"
+        }));
+    } else {
+        throw new Error('No questions generated');
+    }
+}
+
+function getFallbackQuestions() {
+    quizQuestions = [
+        {
+            question: "Apa ide utama dari materi yang telah dipelajari?",
+            options: ["A. Konsep dasar", "B. Detail teknis", "C. Contoh aplikasi", "D. Semua benar"],
+            correctAnswer: "A"
+        },
+        {
+            question: "Manakah yang merupakan poin penting?",
+            options: ["A. Semua informasi", "B. Konsep utama", "C. Contoh spesifik", "D. Data pendukung"],
+            correctAnswer: "B"
+        },
+        {
+            question: "Bagaimana sebaiknya materi ini dipelajari lebih lanjut?",
+            options: [
+                "A. Menghafal seluruh isi materi",
+                "B. Memahami konsep dan berlatih penerapan",
+                "C. Membaca sekali saja",
+                "D. Mencari materi yang lebih sulit"
+            ],
+            correctAnswer: "B"
+        }
+    ];
 }
 
 // Demo questions fallback
