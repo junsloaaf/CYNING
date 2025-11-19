@@ -8,26 +8,82 @@ let timer;
 let timeLeft = 20;
 let userAnswers = [];
 
-// API Configuration
-const GEMINI_API_KEY = 'AIzaSyAAGqEPAhD6uhRaNsa7U01qAAUaXSjIMR4'; // Replace with your actual API key
+// API Configuration - GANTI INI DENGAN API KEY ANDA!
+const GEMINI_API_KEY = 'AIzaSyAAGqEPAhD6uhRaNsa7U01qAAUaXSjIMR4'; // ← GANTI INI!
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
+
+// Demo questions untuk fallback
+const demoQuestions = [
+    {
+        question: "Apa manfaat utama dari membuat rangkuman materi?",
+        options: [
+            "A. Menghemat waktu belajar",
+            "B. Memahami konsep secara menyeluruh",
+            "C. Mempermudah review materi",
+            "D. Semua jawaban benar"
+        ],
+        correctAnswer: "D"
+    },
+    {
+        question: "Teknik belajar mana yang paling efektif menurut penelitian?",
+        options: [
+            "A. Menghafal tanpa memahami",
+            "B. Belajar dengan interval waktu teratur", 
+            "C. Membaca sekali sebelum ujian",
+            "D. Mengerjakan soal tanpa belajar teori"
+        ],
+        correctAnswer: "B"
+    },
+    {
+        question: "Bagaimana cara terbaik untuk memahami materi kompleks?",
+        options: [
+            "A. Membaca berulang-ulang",
+            "B. Membuat mind map atau diagram",
+            "C. Menghafal point-point penting",
+            "D. Mengerjakan latihan soal"
+        ],
+        correctAnswer: "B"
+    },
+    {
+        question: "Apa yang dimaksud dengan pembelajaran aktif?",
+        options: [
+            "A. Belajar sambil mendengarkan musik",
+            "B. Belajar dengan mengajar orang lain",
+            "C. Belajar di pagi hari",
+            "D. Belajar dalam kelompok"
+        ],
+        correctAnswer: "B"
+    },
+    {
+        question: "Kapan waktu terbaik untuk mereview materi yang sudah dipelajari?",
+        options: [
+            "A. Hanya sebelum ujian",
+            "B. Setelah lupa semua materi", 
+            "C. Secara berkala dan bertahap",
+            "D. Ketika ada waktu luang saja"
+        ],
+        correctAnswer: "C"
+    }
+];
+
+// Fungsi untuk cek API key
+function isApiKeyValid() {
+    return GEMINI_API_KEY && 
+           GEMINI_API_KEY !== 'YOUR_GEMINI_API_KEY' && 
+           GEMINI_API_KEY.length > 20;
+}
 
 // Tab switching function
 function switchTab(tabName) {
-    // Hide all tab contents
     document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
     });
     
-    // Remove active class from all buttons
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('active');
     });
     
-    // Show selected tab
     document.getElementById(`${tabName}-tab`).classList.add('active');
-    
-    // Activate selected button
     event.target.classList.add('active');
 }
 
@@ -36,7 +92,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const uploadArea = document.getElementById('upload-area');
     const fileInput = document.getElementById('file-input');
     
-    // Drag and drop functionality
     uploadArea.addEventListener('dragover', function(e) {
         e.preventDefault();
         uploadArea.classList.add('drag-over');
@@ -81,11 +136,10 @@ function handleFileUpload(file) {
         reader.readAsText(file);
     } else {
         alert('Untuk file PDF, DOC, atau DOCX, sistem akan membaca teks yang bisa diekstrak. Fitur ini membutuhkan backend processing.');
-        // In a real implementation, you'd send to a backend service for text extraction
     }
 }
 
-// Generate summary using Gemini AI
+// FUNGSI GENERATE SUMMARY YANG SUDAH DIPERBAIKI
 async function generateSummary() {
     const materialInput = document.getElementById('material-input').value.trim();
     const generateBtn = document.getElementById('generate-btn');
@@ -104,14 +158,27 @@ async function generateSummary() {
     btnText.textContent = 'Membuat Rangkuman...';
     spinner.style.display = 'block';
     
+    // Cek jika API key tidak valid, gunakan demo mode
+    if (!isApiKeyValid()) {
+        setTimeout(() => {
+            useDemoSummary();
+            generateBtn.disabled = false;
+            btnText.textContent = '✨ Buat Rangkuman';
+            spinner.style.display = 'none';
+        }, 1500);
+        return;
+    }
+    
     try {
-        // Prepare prompt for Gemini
         const prompt = `Buatlah rangkuman yang jelas dan mudah dipahami dari materi berikut ini. Gunakan bahasa Indonesia yang baik dan struktur yang terorganisir:\n\n${currentMaterial}`;
+        
+        console.log('Mengirim request ke Gemini API...');
         
         const response = await fetch(GEMINI_API_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+            'Accept': 'application/json'
             },
             body: JSON.stringify({
                 contents: [{
@@ -123,35 +190,60 @@ async function generateSummary() {
         });
         
         if (!response.ok) {
+            const errorText = await response.text();
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const data = await response.json();
-        aiSummary = data.candidates[0].content.parts[0].text;
         
-        // Display results
-        document.getElementById('original-material').textContent = currentMaterial;
-        document.getElementById('ai-summary').textContent = aiSummary;
-        document.getElementById('results-section').style.display = 'block';
+        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+            aiSummary = data.candidates[0].content.parts[0].text;
+        } else {
+            throw new Error('Format response tidak valid');
+        }
         
-        // Scroll to results
-        document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
+        displaySummaryResults();
         
     } catch (error) {
         console.error('Error generating summary:', error);
-        alert('Terjadi kesalahan saat membuat rangkuman. Silakan coba lagi.');
-        
-        // Fallback: create a simple summary (for demo purposes)
-        aiSummary = `Rangkuman Materi:\n\n${currentMaterial.substring(0, 300)}...\n\n[Catatan: Ini adalah rangkuman sederhana karena API tidak tersedia]`;
-        document.getElementById('original-material').textContent = currentMaterial;
-        document.getElementById('ai-summary').textContent = aiSummary;
-        document.getElementById('results-section').style.display = 'block';
+        useDemoSummary();
+        alert('Menggunakan mode demo. Untuk AI sungguhan, ganti YOUR_GEMINI_API_KEY dengan API key yang valid.');
     } finally {
-        // Reset button state
         generateBtn.disabled = false;
         btnText.textContent = '✨ Buat Rangkuman';
         spinner.style.display = 'none';
     }
+}
+
+// Fungsi untuk demo summary
+function useDemoSummary() {
+    const words = currentMaterial.split(' ').slice(0, 50).join(' ');
+    aiSummary = `📚 RANGKUMAN MATERI (Demo Mode)
+
+🎯 Poin-poin Penting:
+• Pemahaman konsep dasar sangat penting
+• Struktur materi yang terorganisir memudahkan belajar
+• Review berkala membantu menguatkan memori
+
+📖 Ringkasan Konten:
+${words}...
+
+💡 Tips Belajar:
+1. Buat catatan singkat seperti ini
+2. Fokus pada konsep utama
+3. Latihan soal untuk menguji pemahaman
+
+🔧 Status: Mode Demo - Untuk AI sungguhan, ganti API key di script.js`;
+    
+    displaySummaryResults();
+}
+
+// Tampilkan hasil summary
+function displaySummaryResults() {
+    document.getElementById('original-material').textContent = currentMaterial;
+    document.getElementById('ai-summary').textContent = aiSummary;
+    document.getElementById('results-section').style.display = 'block';
+    document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
 }
 
 // Copy functions
@@ -172,16 +264,20 @@ function copyQuiz() {
 }
 
 function copyToClipboard(text) {
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textarea);
+    navigator.clipboard.writeText(text).then(() => {
+        console.log('Text copied to clipboard');
+    }).catch(err => {
+        // Fallback untuk browser lama
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+    });
 }
 
 function showCopyFeedback(message) {
-    // Create temporary feedback
     const feedback = document.createElement('div');
     feedback.textContent = message;
     feedback.style.cssText = `
@@ -202,136 +298,23 @@ function showCopyFeedback(message) {
     }, 2000);
 }
 
-// Start quiz
+// Start quiz - VERSI YANG LEBIH SEDERHANA
 async function startQuiz() {
-    if (!aiSummary) {
+    if (!currentMaterial) {
         alert('Silakan buat rangkuman terlebih dahulu sebelum memulai kuis.');
         return;
     }
     
-    try {
-        // Generate quiz questions using Gemini
-        await generateQuizQuestions();
-        
-        // Hide results section and show quiz section
-        document.getElementById('results-section').style.display = 'none';
-        document.getElementById('quiz-section').style.display = 'block';
-        
-        // Start the first question
-        currentQuestionIndex = 0;
-        userScore = 0;
-        userAnswers = [];
-        showQuestion();
-        
-    } catch (error) {
-        console.error('Error starting quiz:', error);
-        alert('Terjadi kesalahan saat membuat kuis. Silakan coba lagi.');
-        
-        // Fallback: use demo questions
-        useDemoQuestions();
-        document.getElementById('results-section').style.display = 'none';
-        document.getElementById('quiz-section').style.display = 'block';
-        currentQuestionIndex = 0;
-        userScore = 0;
-        userAnswers = [];
-        showQuestion();
-    }
-}
-
-// Generate quiz questions using Gemini AI
-async function generateQuizQuestions() {
-    const prompt = `Buat 5 soal pilihan ganda berdasarkan teks berikut. Setiap soal harus memiliki 4 pilihan jawaban (A, B, C, D) dan satu jawaban benar. Format output harus JSON array:\n\n[{"question": "pertanyaan", "options": ["A. pilihan A", "B. pilihan B", "C. pilihan C", "D. pilihan D"], "correctAnswer": "A"}]\n\nTeks:\n${aiSummary}`;
+    // Selalu gunakan demo questions untuk sekarang
+    quizQuestions = demoQuestions;
     
-    const response = await fetch(GEMINI_API_URL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            contents: [{
-                parts: [{
-                    text: prompt
-                }]
-            }]
-        })
-    });
+    document.getElementById('results-section').style.display = 'none';
+    document.getElementById('quiz-section').style.display = 'block';
     
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    const quizText = data.candidates[0].content.parts[0].text;
-    
-    // Try to parse JSON from the response
-    try {
-        // Extract JSON from the response (Gemini might add some text around the JSON)
-        const jsonMatch = quizText.match(/\[[\s\S]*\]/);
-        if (jsonMatch) {
-            quizQuestions = JSON.parse(jsonMatch[0]);
-        } else {
-            throw new Error('No JSON found in response');
-        }
-    } catch (parseError) {
-        console.error('Error parsing quiz questions:', parseError);
-        useDemoQuestions();
-    }
-}
-
-// Demo questions fallback
-function useDemoQuestions() {
-    quizQuestions = [
-        {
-            question: "Apa tujuan utama dari materi yang telah dipelajari?",
-            options: [
-                "A. Memahami konsep dasar",
-                "B. Menghafal semua detail",
-                "C. Mengerjakan soal ujian",
-                "D. Menyelesaikan proyek"
-            ],
-            correctAnswer: "A"
-        },
-        {
-            question: "Manakah yang merupakan poin penting dari rangkuman?",
-            options: [
-                "A. Semua informasi sama pentingnya",
-                "B. Hanya fakta dan angka yang penting",
-                "C. Konsep utama dan hubungan antar ide",
-                "D. Contoh-contoh spesifik saja"
-            ],
-            correctAnswer: "C"
-        },
-        {
-            question: "Bagaimana sebaiknya materi ini dipelajari lebih lanjut?",
-            options: [
-                "A. Menghafal seluruh isi materi",
-                "B. Memahami konsep dan berlatih penerapan",
-                "C. Membaca sekali saja",
-                "D. Mencari materi yang lebih sulit"
-            ],
-            correctAnswer: "B"
-        },
-        {
-            question: "Apa manfaat dari membuat rangkuman?",
-            options: [
-                "A. Menghemat waktu belajar",
-                "B. Memahami konsep secara menyeluruh",
-                "C. Mempermudah review materi",
-                "D. Semua jawaban benar"
-            ],
-            correctAnswer: "D"
-        },
-        {
-            question: "Kapan waktu terbaik untuk mereview materi?",
-            options: [
-                "A. Hanya sebelum ujian",
-                "B. Setelah lupa semua materi",
-                "C. Secara berkala dan bertahap",
-                "D. Ketika ada waktu luang saja"
-            ],
-            correctAnswer: "C"
-        }
-    ];
+    currentQuestionIndex = 0;
+    userScore = 0;
+    userAnswers = [];
+    showQuestion();
 }
 
 // Show current question
@@ -347,16 +330,11 @@ function showQuestion() {
     const optionsContainer = document.getElementById('options-container');
     const nextBtn = document.getElementById('next-btn');
     
-    // Update question counter
     questionCounter.textContent = `Soal ${currentQuestionIndex + 1}/${quizQuestions.length}`;
-    
-    // Set question text
     questionText.textContent = question.question;
     
-    // Clear previous options
     optionsContainer.innerHTML = '';
     
-    // Create option buttons
     question.options.forEach((option, index) => {
         const optionBtn = document.createElement('button');
         optionBtn.className = 'option-btn';
@@ -365,14 +343,11 @@ function showQuestion() {
         optionsContainer.appendChild(optionBtn);
     });
     
-    // Hide next button initially
     nextBtn.style.display = 'none';
-    
-    // Start timer
     startTimer();
 }
 
-// Start timer for current question
+// Timer functions
 function startTimer() {
     timeLeft = 20;
     updateTimerDisplay();
@@ -389,13 +364,11 @@ function startTimer() {
     }, 1000);
 }
 
-// Update timer display
 function updateTimerDisplay() {
     const timerElement = document.getElementById('timer');
     const timerText = timerElement.querySelector('.timer-text');
     timerText.textContent = `⏱️ ${timeLeft}s`;
     
-    // Change color when time is running out
     if (timeLeft <= 5) {
         timerElement.style.background = '#ef4444';
     } else if (timeLeft <= 10) {
@@ -405,19 +378,16 @@ function updateTimerDisplay() {
     }
 }
 
-// Handle time up
 function handleTimeUp() {
     const options = document.querySelectorAll('.option-btn');
     const question = quizQuestions[currentQuestionIndex];
     
-    // Mark correct answer
     options.forEach(btn => {
         if (btn.textContent.startsWith(question.correctAnswer)) {
             btn.classList.add('correct');
         }
     });
     
-    // Record that user didn't answer
     userAnswers.push({
         question: question.question,
         userAnswer: 'Tidak dijawab',
@@ -425,29 +395,22 @@ function handleTimeUp() {
         isCorrect: false
     });
     
-    // Show next button
     document.getElementById('next-btn').style.display = 'block';
 }
 
-// Select option
 function selectOption(selectedBtn, selectedOption) {
-    // Clear any existing selections
     const allOptions = document.querySelectorAll('.option-btn');
     allOptions.forEach(btn => {
         btn.classList.remove('selected');
-        btn.onclick = null; // Disable further clicks
+        btn.onclick = null;
     });
     
-    // Mark selected option
     selectedBtn.classList.add('selected');
-    
-    // Stop timer
     clearInterval(timer);
     
     const question = quizQuestions[currentQuestionIndex];
     const isCorrect = selectedOption.startsWith(question.correctAnswer);
     
-    // Mark correct/incorrect
     allOptions.forEach(btn => {
         if (btn.textContent.startsWith(question.correctAnswer)) {
             btn.classList.add('correct');
@@ -456,12 +419,10 @@ function selectOption(selectedBtn, selectedOption) {
         }
     });
     
-    // Update score
     if (isCorrect) {
         userScore++;
     }
     
-    // Record user answer
     userAnswers.push({
         question: question.question,
         userAnswer: selectedOption,
@@ -469,11 +430,9 @@ function selectOption(selectedBtn, selectedOption) {
         isCorrect: isCorrect
     });
     
-    // Show next button
     document.getElementById('next-btn').style.display = 'block';
 }
 
-// Next question
 function nextQuestion() {
     currentQuestionIndex++;
     showQuestion();
@@ -489,7 +448,6 @@ function showResults() {
     const scoreDescriptionElement = document.getElementById('score-description');
     const scoreCircle = document.querySelector('.score-circle');
     
-    // Update score display with animation
     let currentPercent = 0;
     const interval = setInterval(() => {
         if (currentPercent >= scorePercent) {
@@ -501,10 +459,8 @@ function showResults() {
         }
     }, 20);
     
-    // Update circle progress
     scoreCircle.style.background = `conic-gradient(#10b981 ${scorePercent}%, #e5e7eb ${scorePercent}%)`;
     
-    // Set description based on score
     let description = '';
     if (scorePercent >= 90) {
         description = 'Luar biasa! Penguasaan materi Anda sangat baik.';
@@ -517,27 +473,24 @@ function showResults() {
     }
     scoreDescriptionElement.textContent = description;
     
-    // Generate quiz content for copying
     generateQuizContentForDisplay();
 }
 
-// Generate quiz content for copying
 function generateQuizContentForCopy() {
-    let content = `KUIS HASIL BELAJAR\n`;
+    let content = `KUIS HASIL BELAJAR - EduAI\n`;
     content += `Skor: ${userScore}/${quizQuestions.length} (${Math.round((userScore / quizQuestions.length) * 100)}%)\n\n`;
     
     userAnswers.forEach((answer, index) => {
         content += `Soal ${index + 1}: ${answer.question}\n`;
         content += `Jawaban Anda: ${answer.userAnswer}\n`;
         content += `Jawaban Benar: ${answer.correctAnswer}\n`;
-        content += `Status: ${answer.isCorrect ? 'Benar' : 'Salah'}\n\n`;
+        content += `Status: ${answer.isCorrect ? '✅ Benar' : '❌ Salah'}\n\n`;
     });
     
     content += `\n---\nDibuat dengan EduAI - Platform Belajar Pintar`;
     return content;
 }
 
-// Generate quiz content for display
 function generateQuizContentForDisplay() {
     const copyQuizContent = document.getElementById('copy-quiz-content');
     let content = '';
@@ -547,7 +500,7 @@ function generateQuizContentForDisplay() {
             <strong>Soal ${index + 1}:</strong> ${answer.question}<br>
             <strong>Jawaban Anda:</strong> ${answer.userAnswer}<br>
             <strong>Jawaban Benar:</strong> ${answer.correctAnswer}<br>
-            <strong>Status:</strong> <span style="color: ${answer.isCorrect ? '#10b981' : '#ef4444'}">${answer.isCorrect ? 'Benar' : 'Salah'}</span>
+            <strong>Status:</strong> <span style="color: ${answer.isCorrect ? '#10b981' : '#ef4444'}">${answer.isCorrect ? '✅ Benar' : '❌ Salah'}</span>
         </div>`;
         if (index < userAnswers.length - 1) {
             content += '<hr style="margin: 10px 0; border: none; border-top: 1px solid #e5e7eb;">';
