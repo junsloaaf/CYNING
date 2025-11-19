@@ -1,703 +1,415 @@
-:root {
-    --primary: #4361ee;
-    --secondary: #3a0ca3;
-    --accent: #4cc9f0;
-    --light: #f8f9fa;
-    --dark: #212529;
-    --success: #4bb543;
-    --warning: #ff9f1c;
-    --danger: #e63946;
-    --card-bg: #ffffff;
-    --shadow: 0 4px 12px rgba(0,0,0,0.08);
+// Timer functionality
+let timerInterval;
+let timeLeft = 25 * 60; // 25 minutes in seconds
+let isRunning = false;
+
+const timerDisplay = document.querySelector('.timer-display');
+const startBtn = document.getElementById('start-timer');
+const pauseBtn = document.getElementById('pause-timer');
+const resetBtn = document.getElementById('reset-timer');
+const presetBtns = document.querySelectorAll('.preset-btn');
+const activeTimer = document.getElementById('active-timer');
+const timerStatus = document.getElementById('timer-status');
+const currentTask = document.getElementById('current-task');
+
+function updateTimerDisplay() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    timerStatus.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+function startTimer() {
+    if (isRunning) return;
+    
+    isRunning = true;
+    activeTimer.style.display = 'flex';
+    
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            isRunning = false;
+            alert('Waktu belajar telah habis! Saatnya istirahat sejenak.');
+            activeTimer.style.display = 'none';
+            // Play notification sound if needed
+        }
+    }, 1000);
 }
 
-body {
-    background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
-    color: var(--dark);
-    line-height: 1.6;
-    min-height: 100vh;
+function pauseTimer() {
+    clearInterval(timerInterval);
+    isRunning = false;
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+function resetTimer() {
+    clearInterval(timerInterval);
+    isRunning = false;
+    // Reset to current preset
+    const activePreset = document.querySelector('.preset-btn.active');
+    timeLeft = parseInt(activePreset.dataset.time) * 60;
+    updateTimerDisplay();
+    activeTimer.style.display = 'none';
 }
 
-header {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-    color: white;
-    padding: 30px 0;
-    border-radius: 16px;
-    box-shadow: var(--shadow);
-    margin-bottom: 30px;
-    text-align: center;
+startBtn.addEventListener('click', startTimer);
+pauseBtn.addEventListener('click', pauseTimer);
+resetBtn.addEventListener('click', resetTimer);
+
+presetBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        presetBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        timeLeft = parseInt(btn.dataset.time) * 60;
+        updateTimerDisplay();
+        
+        if (isRunning) {
+            pauseTimer();
+            startTimer();
+        }
+    });
+});
+
+// Task list functionality
+const taskInput = document.getElementById('task-input');
+const addTaskBtn = document.getElementById('add-task');
+const taskList = document.getElementById('task-list');
+let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+function renderTasks() {
+    taskList.innerHTML = '';
+    
+    tasks.forEach((task, index) => {
+        const li = document.createElement('li');
+        li.className = `task-item ${task.completed ? 'completed' : ''}`;
+        
+        li.innerHTML = `
+            <div class="task-checkbox ${task.completed ? 'checked' : ''}">
+                ${task.completed ? '<i class="fas fa-check"></i>' : ''}
+            </div>
+            <div class="task-text">${task.text}</div>
+            <div class="task-actions">
+                <button class="task-action edit-btn"><i class="fas fa-edit"></i></button>
+                <button class="task-action delete-btn"><i class="fas fa-trash"></i></button>
+            </div>
+        `;
+        
+        const checkbox = li.querySelector('.task-checkbox');
+        const editBtn = li.querySelector('.edit-btn');
+        const deleteBtn = li.querySelector('.delete-btn');
+        
+        checkbox.addEventListener('click', () => {
+            tasks[index].completed = !tasks[index].completed;
+            saveTasks();
+            renderTasks();
+        });
+        
+        editBtn.addEventListener('click', () => {
+            const newText = prompt('Edit tugas:', tasks[index].text);
+            if (newText && newText.trim() !== '') {
+                tasks[index].text = newText.trim();
+                saveTasks();
+                renderTasks();
+            }
+        });
+        
+        deleteBtn.addEventListener('click', () => {
+            if (confirm('Hapus tugas ini?')) {
+                tasks.splice(index, 1);
+                saveTasks();
+                renderTasks();
+            }
+        });
+        
+        taskList.appendChild(li);
+    });
+    
+    // Update task count in stats
+    document.querySelector('.stat-value').textContent = tasks.filter(t => !t.completed).length;
 }
 
-.logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 10px;
+function addTask() {
+    const text = taskInput.value.trim();
+    if (text === '') return;
+    
+    tasks.push({
+        text: text,
+        completed: false,
+        createdAt: new Date().toISOString()
+    });
+    
+    saveTasks();
+    renderTasks();
+    taskInput.value = '';
 }
 
-.logo i {
-    font-size: 2.5rem;
+function saveTasks() {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
-.logo h1 {
-    font-size: 2.2rem;
-    font-weight: 700;
+addTaskBtn.addEventListener('click', addTask);
+taskInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') addTask();
+});
+
+// Modal functionality
+const materialsModal = document.getElementById('materials-modal');
+const pdfModal = document.getElementById('pdf-modal');
+const openMaterialsBtn = document.getElementById('open-materials');
+const openPdfBtn = document.getElementById('open-pdf');
+const closeModalBtns = document.querySelectorAll('.close-modal');
+
+function openModal(modal) {
+    modal.style.display = 'flex';
 }
 
-.tagline {
-    font-size: 1.1rem;
-    opacity: 0.9;
-    max-width: 600px;
-    margin: 0 auto;
+function closeModal(modal) {
+    modal.style.display = 'none';
 }
 
-.dashboard {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
-    margin-bottom: 30px;
+openMaterialsBtn.addEventListener('click', () => openModal(materialsModal));
+openPdfBtn.addEventListener('click', () => openModal(pdfModal));
+
+closeModalBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const modal = btn.closest('.modal');
+        closeModal(modal);
+    });
+});
+
+// Close modal when clicking outside
+window.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal')) {
+        closeModal(e.target);
+    }
+});
+
+// Materials navigation
+const subjectItems = document.querySelectorAll('.subject-list li');
+const materialSections = document.querySelectorAll('.material-section');
+
+subjectItems.forEach(item => {
+    item.addEventListener('click', () => {
+        // Remove active class from all items
+        subjectItems.forEach(i => i.classList.remove('active'));
+        materialSections.forEach(s => s.classList.remove('active'));
+        
+        // Add active class to clicked item
+        item.classList.add('active');
+        
+        // Show corresponding material section
+        const subjectId = item.getAttribute('data-subject');
+        document.getElementById(subjectId).classList.add('active');
+    });
+});
+
+// PDF Upload functionality
+const pdfUpload = document.getElementById('pdf-upload');
+const uploadPdfBtn = document.getElementById('upload-pdf-btn');
+const pdfUploadArea = document.getElementById('pdf-upload-area');
+const fileList = document.getElementById('file-list');
+
+// Handle PDF upload area click
+uploadPdfBtn.addEventListener('click', () => {
+    pdfUpload.click();
+});
+
+pdfUploadArea.addEventListener('click', () => {
+    pdfUpload.click();
+});
+
+// Handle file selection
+pdfUpload.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        if (file.type === 'application/pdf') {
+            uploadPDF(file);
+        } else {
+            alert('Hanya file PDF yang diizinkan!');
+        }
+    }
+});
+
+// Handle drag and drop
+pdfUploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    pdfUploadArea.style.borderColor = '#4361ee';
+    pdfUploadArea.style.backgroundColor = '#f8faff';
+});
+
+pdfUploadArea.addEventListener('dragleave', () => {
+    pdfUploadArea.style.borderColor = '#ddd';
+    pdfUploadArea.style.backgroundColor = 'transparent';
+});
+
+pdfUploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    pdfUploadArea.style.borderColor = '#ddd';
+    pdfUploadArea.style.backgroundColor = 'transparent';
+    
+    const file = e.dataTransfer.files[0];
+    if (file && file.type === 'application/pdf') {
+        uploadPDF(file);
+    } else {
+        alert('Hanya file PDF yang diizinkan!');
+    }
+});
+
+// Upload PDF function
+function uploadPDF(file) {
+    // In a real application, you would upload to a server here
+    // For this demo, we'll just add it to the file list
+    
+    const fileItem = document.createElement('div');
+    fileItem.className = 'file-item';
+    
+    const fileSize = (file.size / (1024 * 1024)).toFixed(2); // Convert to MB
+    
+    fileItem.innerHTML = `
+        <i class="fas fa-file-pdf"></i>
+        <div class="file-info">
+            <h5>${file.name}</h5>
+            <p>${fileSize} MB • Baru saja diupload</p>
+        </div>
+        <div class="file-actions">
+            <button class="file-action view-btn"><i class="fas fa-eye"></i></button>
+            <button class="file-action delete-btn"><i class="fas fa-trash"></i></button>
+        </div>
+    `;
+    
+    const viewBtn = fileItem.querySelector('.view-btn');
+    const deleteBtn = fileItem.querySelector('.delete-btn');
+    
+    viewBtn.addEventListener('click', () => {
+        alert(`Membuka file: ${file.name}\n\nDalam aplikasi nyata, file PDF akan ditampilkan di sini.`);
+    });
+    
+    deleteBtn.addEventListener('click', () => {
+        if (confirm(`Hapus file ${file.name}?`)) {
+            fileItem.remove();
+        }
+    });
+    
+    fileList.appendChild(fileItem);
+    
+    // Show success message
+    alert(`File "${file.name}" berhasil diupload!`);
 }
 
-@media (max-width: 768px) {
-    .dashboard {
-        grid-template-columns: 1fr;
+// Subject-specific PDF upload
+const subjectUploadAreas = document.querySelectorAll('.upload-area');
+const subjectPDFUploads = document.querySelectorAll('.pdf-upload');
+
+subjectUploadAreas.forEach((area, index) => {
+    area.addEventListener('click', () => {
+        subjectPDFUploads[index].click();
+    });
+    
+    // Drag and drop for subject areas
+    area.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        area.style.borderColor = '#4361ee';
+        area.style.backgroundColor = '#f8faff';
+    });
+    
+    area.addEventListener('dragleave', () => {
+        area.style.borderColor = '#ddd';
+        area.style.backgroundColor = 'transparent';
+    });
+    
+    area.addEventListener('drop', (e) => {
+        e.preventDefault();
+        area.style.borderColor = '#ddd';
+        area.style.backgroundColor = 'transparent';
+        
+        const file = e.dataTransfer.files[0];
+        if (file && file.type === 'application/pdf') {
+            subjectPDFUploads[index].files = e.dataTransfer.files;
+            handleSubjectPDFUpload(file, area);
+        } else {
+            alert('Hanya file PDF yang diizinkan!');
+        }
+    });
+});
+
+subjectPDFUploads.forEach(upload => {
+    upload.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const area = upload.closest('.upload-area');
+            handleSubjectPDFUpload(file, area);
+        }
+    });
+});
+
+function handleSubjectPDFUpload(file, area) {
+    const subjectName = area.closest('.material-section').id;
+    const subjectDisplayName = document.querySelector(`[data-subject="${subjectName}"]`).textContent;
+    
+    alert(`File "${file.name}" berhasil diupload untuk mata pelajaran ${subjectDisplayName}!`);
+    
+    // In a real app, you would save this association and display the file in the material list
+}
+
+// Initialize
+updateTimerDisplay();
+renderTasks();
+
+// Set current task for timer
+if (tasks.length > 0) {
+    const firstUncompleted = tasks.find(t => !t.completed);
+    if (firstUncompleted) {
+        currentTask.textContent = firstUncompleted.text;
     }
 }
 
-.card {
-    background: var(--card-bg);
-    border-radius: 16px;
-    padding: 25px;
-    box-shadow: var(--shadow);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-}
-
-.card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #eaeaea;
-    padding-bottom: 15px;
-}
-
-.card-title {
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: var(--primary);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.card-title i {
-    font-size: 1.3rem;
-}
-
-.feature-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 25px;
-    margin-bottom: 30px;
-}
-
-.feature-card {
-    background: var(--card-bg);
-    border-radius: 16px;
-    padding: 25px;
-    box-shadow: var(--shadow);
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-.feature-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-}
-
-.feature-icon {
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-
-.feature-icon i {
-    font-size: 1.8rem;
-    color: white;
-}
-
-.feature-title {
-    font-size: 1.3rem;
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: var(--secondary);
-}
-
-.feature-desc {
-    color: #666;
-    margin-bottom: 20px;
-}
-
-.btn {
-    display: inline-block;
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 50px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    text-align: center;
-}
-
-.btn:hover {
-    background: var(--secondary);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
-}
-
-.btn-outline {
-    background: transparent;
-    border: 2px solid var(--primary);
-    color: var(--primary);
-}
-
-.btn-outline:hover {
-    background: var(--primary);
-    color: white;
-}
-
-.btn-sm {
-    padding: 8px 16px;
-    font-size: 0.9rem;
-}
-
-.timer-display {
-    font-size: 3.5rem;
-    font-weight: 700;
-    text-align: center;
-    color: var(--primary);
-    margin: 20px 0;
-    font-family: 'Courier New', monospace;
-}
-
-.timer-controls {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.timer-btn {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--light);
-    border: 2px solid #eaeaea;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 1.2rem;
-}
-
-.timer-btn:hover {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
-}
-
-.timer-presets {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.preset-btn {
-    padding: 8px 15px;
-    background: var(--light);
-    border: 1px solid #eaeaea;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 0.9rem;
-}
-
-.preset-btn.active {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
-}
-
-.task-input {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.task-input input {
-    flex: 1;
-    padding: 12px 15px;
-    border: 1px solid #eaeaea;
-    border-radius: 10px;
-    font-size: 1rem;
-}
-
-.task-list {
-    list-style: none;
-}
-
-.task-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 15px;
-    background: var(--light);
-    border-radius: 10px;
-    margin-bottom: 10px;
-    transition: all 0.3s ease;
-}
-
-.task-item:hover {
-    background: #f0f4ff;
-}
-
-.task-item.completed {
-    opacity: 0.7;
-    text-decoration: line-through;
-}
-
-.task-checkbox {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: 2px solid #ddd;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-}
-
-.task-checkbox.checked {
-    background: var(--success);
-    border-color: var(--success);
-    color: white;
-}
-
-.task-text {
-    flex: 1;
-}
-
-.task-actions {
-    display: flex;
-    gap: 8px;
-}
-
-.task-action {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #777;
-    transition: color 0.3s ease;
-}
-
-.task-action:hover {
-    color: var(--primary);
-}
-
-.subject-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
-}
-
-.subject-card {
-    background: var(--card-bg);
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: var(--shadow);
-    transition: all 0.3s ease;
-    text-align: center;
-    cursor: pointer;
-}
-
-.subject-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-}
-
-.subject-icon {
-    font-size: 2.5rem;
-    margin-bottom: 15px;
-    color: var(--primary);
-}
-
-.progress-bar {
-    height: 8px;
-    background: #eaeaea;
-    border-radius: 4px;
-    margin: 15px 0;
-    overflow: hidden;
-}
-
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
-    border-radius: 4px;
-    transition: width 0.5s ease;
-}
-
-.stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.stat-card {
-    background: var(--light);
-    border-radius: 10px;
-    padding: 15px;
-    text-align: center;
-}
-
-.stat-value {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--primary);
-    margin-bottom: 5px;
-}
-
-.stat-label {
-    font-size: 0.9rem;
-    color: #666;
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-}
-
-.modal-content {
-    background: white;
-    border-radius: 16px;
-    padding: 30px;
-    width: 90%;
-    max-width: 800px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #eaeaea;
-}
-
-.modal-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--primary);
-}
-
-.close-modal {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #777;
-}
-
-footer {
-    text-align: center;
-    margin-top: 50px;
-    padding: 20px;
-    color: #666;
-    font-size: 0.9rem;
-}
-
-.motivation-quote {
-    font-style: italic;
-    margin: 20px 0;
-    padding: 15px;
-    background: var(--light);
-    border-radius: 10px;
-    border-left: 4px solid var(--primary);
-}
-
-.study-tips {
-    margin-top: 20px;
-}
-
-.tip-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-    padding: 10px;
-    background: var(--light);
-    border-radius: 8px;
-}
-
-.tip-icon {
-    color: var(--success);
-    font-size: 1.2rem;
-}
-
-.active-timer {
-    background: linear-gradient(135deg, #4bb543 0%, #3a9e2a 100%);
-    color: white;
-    padding: 10px 15px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 15px;
-}
-
-/* Materials Modal Styles */
-.materials-container {
-    display: flex;
-    gap: 20px;
-    height: 500px;
-}
-
-.materials-sidebar {
-    width: 250px;
-    border-right: 1px solid #eaeaea;
-    padding-right: 20px;
-}
-
-.materials-sidebar h4 {
-    margin-bottom: 15px;
-    color: var(--primary);
-}
-
-.subject-list {
-    list-style: none;
-}
-
-.subject-list li {
-    padding: 12px 15px;
-    border-radius: 8px;
-    margin-bottom: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.subject-list li:hover {
-    background: #f0f4ff;
-}
-
-.subject-list li.active {
-    background: var(--primary);
-    color: white;
-}
-
-.materials-content {
-    flex: 1;
-    overflow-y: auto;
-}
-
-.material-section {
-    display: none;
-}
-
-.material-section.active {
-    display: block;
-}
-
-.material-list {
-    margin-bottom: 30px;
-}
-
-.material-item {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 15px;
-    background: var(--light);
-    border-radius: 10px;
-    margin-bottom: 10px;
-}
-
-.material-item i {
-    font-size: 1.5rem;
-    color: #e63946;
-}
-
-.material-info {
-    flex: 1;
-}
-
-.material-info h5 {
-    margin-bottom: 5px;
-    color: var(--dark);
-}
-
-.material-info p {
-    font-size: 0.9rem;
-    color: #666;
-}
-
-.upload-section {
-    border-top: 1px solid #eaeaea;
-    padding-top: 20px;
-}
-
-.upload-section h5 {
-    margin-bottom: 15px;
-    color: var(--primary);
-}
-
-.upload-area {
-    border: 2px dashed #ddd;
-    border-radius: 10px;
-    padding: 25px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.upload-area:hover {
-    border-color: var(--primary);
-    background: #f8faff;
-}
-
-.upload-area i {
-    font-size: 2.5rem;
-    color: var(--primary);
-    margin-bottom: 10px;
-}
-
-.upload-area p {
-    color: #666;
-    margin-bottom: 15px;
-}
-
-.pdf-upload {
-    display: none;
-}
-
-.upload-area-large {
-    border: 2px dashed #ddd;
-    border-radius: 10px;
-    padding: 40px;
-    text-align: center;
-    margin: 20px 0;
-    transition: all 0.3s ease;
-}
-
-.upload-area-large:hover {
-    border-color: var(--primary);
-    background: #f8faff;
-}
-
-.upload-area-large i {
-    font-size: 3rem;
-    color: #e63946;
-    margin-bottom: 15px;
-}
-
-.upload-area-large p {
-    color: #666;
-    margin-bottom: 20px;
-}
-
-.uploaded-files {
-    margin-top: 25px;
-}
-
-.file-list {
-    margin-top: 15px;
-}
-
-.file-item {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 12px 15px;
-    background: var(--light);
-    border-radius: 8px;
-    margin-bottom: 10px;
-}
-
-.file-item i {
-    color: #e63946;
-    font-size: 1.3rem;
-}
-
-.file-info {
-    flex: 1;
-}
-
-.file-info h5 {
-    margin-bottom: 5px;
-}
-
-.file-info p {
-    font-size: 0.8rem;
-    color: #666;
-}
-
-.file-actions {
-    display: flex;
-    gap: 10px;
-}
-
-.file-action {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #777;
-    transition: color 0.3s ease;
-}
-
-.file-action:hover {
-    color: var(--primary);
-}
+// Add some sample tasks if empty
+if (tasks.length === 0) {
+    tasks = [
+        { text: 'Mengerjakan PR Matematika - Bab Integral', completed: false, createdAt: new Date().toISOString() },
+        { text: 'Membaca materi Fisika - Gelombang Bunyi', completed: false, createdAt: new Date().toISOString() },
+        { text: 'Mempersiapkan presentasi Sejarah', completed: true, createdAt: new Date().toISOString() }
+    ];
+    saveTasks();
+    renderTasks();
+}
+
+// Add sample uploaded files
+const sampleFiles = [
+    { name: 'Rangkuman Matematika Integral.pdf', size: '2.4' },
+    { name: 'Soal Latihan Fisika Gelombang.pdf', size: '1.8' }
+];
+
+sampleFiles.forEach(file => {
+    const fileItem = document.createElement('div');
+    fileItem.className = 'file-item';
+    
+    fileItem.innerHTML = `
+        <i class="fas fa-file-pdf"></i>
+        <div class="file-info">
+            <h5>${file.name}</h5>
+            <p>${file.size} MB • 2 hari yang lalu</p>
+        </div>
+        <div class="file-actions">
+            <button class="file-action view-btn"><i class="fas fa-eye"></i></button>
+            <button class="file-action delete-btn"><i class="fas fa-trash"></i></button>
+        </div>
+    `;
+    
+    const viewBtn = fileItem.querySelector('.view-btn');
+    const deleteBtn = fileItem.querySelector('.delete-btn');
+    
+    viewBtn.addEventListener('click', () => {
+        alert(`Membuka file: ${file.name}\n\nDalam aplikasi nyata, file PDF akan ditampilkan di sini.`);
+    });
+    
+    deleteBtn.addEventListener('click', () => {
+        if (confirm(`Hapus file ${file.name}?`)) {
+            fileItem.remove();
+        }
+    });
+    
+    fileList.appendChild(fileItem);
+});
