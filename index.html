@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduSmart - Platform Belajar Kelas 12</title>
+    <title>CYNING</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -11,16 +11,14 @@
     <div class="container">
         <header>
             <div class="logo">
-                <i class="fas fa-graduation-cap"></i>
-                <h1>EduSmart</h1>
+                <h1>Cyber Learning</h1>
             </div>
-            <p class="tagline">Platform Belajar Interaktif untuk Siswa Kelas 12 - Siap Hadapi Ujian dengan Percaya Diri!</p>
         </header>
 
         <div class="dashboard">
             <div class="card">
                 <div class="card-header">
-                    <h2 class="card-title"><i class="fas fa-clock"></i> Pomodoro Timer</h2>
+                    <h2 class="card-title"><i class="fas fa-clock"></i> Study Timer</h2>
                 </div>
                 <div class="timer-display">25:00</div>
                 <div class="timer-controls">
@@ -29,7 +27,7 @@
                     <button class="timer-btn" id="reset-timer"><i class="fas fa-redo"></i></button>
                 </div>
                 <div class="timer-presets">
-                    <button class="preset-btn active" data-time="25">Pomodoro 25:00</button>
+                    <button class="preset-btn active" data-time="25">Study 25:00</button>
                     <button class="preset-btn" data-time="15">Pendek 15:00</button>
                     <button class="preset-btn" data-time="5">Istirahat 5:00</button>
                 </div>
@@ -48,7 +46,6 @@
                     <button class="btn btn-sm" id="add-task"><i class="fas fa-plus"></i> Tambah</button>
                 </div>
                 <ul class="task-list" id="task-list">
-                    <!-- Tasks will be added here dynamically -->
                 </ul>
             </div>
         </div>
@@ -59,7 +56,7 @@
                     <i class="fas fa-book-open"></i>
                 </div>
                 <h3 class="feature-title">Materi Pelajaran</h3>
-                <p class="feature-desc">Akses materi lengkap untuk semua mata pelajaran Kelas 12</p>
+                <p class="feature-desc">Akses seluruh materi mata pelajaran Kelas 12</p>
                 <button class="btn btn-outline" id="open-materials"><i class="fas fa-external-link-alt"></i> Buka Materi</button>
             </div>
 
@@ -68,7 +65,7 @@
                     <i class="fas fa-file-pdf"></i>
                 </div>
                 <h3 class="feature-title">PDF Upload</h3>
-                <p class="feature-desc">Unggah materi PDF dan pelajari dengan tools interaktif</p>
+                <p class="feature-desc">Unggah materi PDF dan pbelajar dengan lebih mudah</p>
                 <button class="btn btn-outline" id="open-pdf"><i class="fas fa-upload"></i> Unggah PDF</button>
             </div>
 
@@ -77,17 +74,10 @@
                     <i class="fas fa-brain"></i>
                 </div>
                 <h3 class="feature-title">AI Pembelajaran</h3>
-                <p class="feature-desc">Dapatkan penjelasan dan rangkuman dengan teknologi AI</p>
-                <button class="btn btn-outline" id="open-ai"><i class="fas fa-robot"></i> Tanya AI</button>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <h3 class="feature-title">Progress Tracker</h3>
-                <p class="feature-desc">Lacak perkembangan belajar dan lihat statistik detail</p>
-                <button class="btn btn-outline" id="open-progress"><i class="fas fa-chart-bar"></i> Lihat Progress</button>
+                <p class="feature-desc">Belajar bersama dengan teknologi AI</p>
+                <a href="https://chatgpt.com" class="btn btn-outline" target="_blank" id="open-ai">
+                    <i class="fas fa-robot"></i> Tanya AI
+                </a>
             </div>
         </div>
 
@@ -102,7 +92,7 @@
                     <div class="progress-bar">
                         <div class="progress-fill" style="width: 65%"></div>
                     </div>
-                    <p>65% Tuntas</p>
+                    <p>65% Progress</p>
                 </div>
                 <div class="subject-card">
                     <i class="fas fa-flask subject-icon"></i>
@@ -110,7 +100,7 @@
                     <div class="progress-bar">
                         <div class="progress-fill" style="width: 45%"></div>
                     </div>
-                    <p>45% Tuntas</p>
+                    <p>45% Progress</p>
                 </div>
                 <div class="subject-card">
                     <i class="fas fa-atom subject-icon"></i>
@@ -118,7 +108,7 @@
                     <div class="progress-bar">
                         <div class="progress-fill" style="width: 50%"></div>
                     </div>
-                    <p>50% Tuntas</p>
+                    <p>50% Progress</p>
                 </div>
                 <div class="subject-card">
                     <i class="fas fa-dna subject-icon"></i>
@@ -126,7 +116,7 @@
                     <div class="progress-bar">
                         <div class="progress-fill" style="width: 70%"></div>
                     </div>
-                    <p>70% Tuntas</p>
+                    <p>70% Progress</p>
                 </div>
                 <div class="subject-card">
                     <i class="fas fa-globe-asia subject-icon"></i>
@@ -134,7 +124,7 @@
                     <div class="progress-bar">
                         <div class="progress-fill" style="width: 80%"></div>
                     </div>
-                    <p>80% Tuntas</p>
+                    <p>80% Progress</p>
                 </div>
                 <div class="subject-card">
                     <i class="fas fa-language subject-icon"></i>
@@ -142,14 +132,14 @@
                     <div class="progress-bar">
                         <div class="progress-fill" style="width: 75%"></div>
                     </div>
-                    <p>75% Tuntas</p>
+                    <p>75% Progress</p>
                 </div>
             </div>
         </div>
 
         <div class="card">
             <div class="card-header">
-                <h2 class="card-title"><i class="fas fa-lightbulb"></i> Tips Belajar Efektif</h2>
+                <h2 class="card-title"><i class="fas fa-lightbulb"></i> Tips Belajar!</h2>
             </div>
             <div class="study-tips">
                 <div class="tip-item">
@@ -158,23 +148,12 @@
                 </div>
                 <div class="tip-item">
                     <i class="fas fa-check-circle tip-icon"></i>
-                    <span>Buat rangkuman dengan kata-kata sendiri</span>
+                    <span>Buat rangkuman dengan bahasa sendiri yang mudah dimengerti</span>
                 </div>
                 <div class="tip-item">
                     <i class="fas fa-check-circle tip-icon"></i>
-                    <span>Ajarkan materi yang sudah dipelajari kepada orang lain</span>
+                    <span>Kerjakan latihan soal secara konsisten</span>
                 </div>
-                <div class="tip-item">
-                    <i class="fas fa-check-circle tip-icon"></i>
-                    <span>Latihan soal secara konsisten</span>
-                </div>
-                <div class="tip-item">
-                    <i class="fas fa-check-circle tip-icon"></i>
-                    <span>Jaga pola tidur yang cukup dan teratur</span>
-                </div>
-            </div>
-            <div class="motivation-quote">
-                "Pendidikan adalah senjata paling mematikan di dunia, karena dengan pendidikan, Anda dapat mengubah dunia." - Nelson Mandela
             </div>
         </div>
 
@@ -184,31 +163,29 @@
             </div>
             <div class="stats">
                 <div class="stat-card">
-                    <div class="stat-value">12</div>
+                    <div class="stat-value">6</div>
                     <div class="stat-label">Materi Dipelajari</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">48</div>
+                    <div class="stat-value">18</div>
                     <div class="stat-label">Jam Belajar</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">156</div>
+                    <div class="stat-value">52</div>
                     <div class="stat-label">Soal Dikerjakan</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">82%</div>
+                    <div class="stat-value">86%</div>
                     <div class="stat-label">Nilai Rata-rata</div>
                 </div>
             </div>
         </div>
 
         <footer>
-            <p>EduSmart &copy; 2023 - Platform Belajar untuk Masa Depan Cerah</p>
-            <p>Didesain khusus untuk siswa SMA Kelas 12</p>
+            <p>CYNING &copy; 2025</p>
         </footer>
     </div>
 
-    <!-- Materials Modal -->
     <div class="modal" id="materials-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -298,13 +275,11 @@
                         </div>
                     </div>
                     
-                    <!-- Content for other subjects would go here -->
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- PDF Upload Modal -->
     <div class="modal" id="pdf-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -321,7 +296,6 @@
             <div class="uploaded-files">
                 <h4>File Terupload</h4>
                 <div class="file-list" id="file-list">
-                    <!-- Uploaded files will appear here -->
                 </div>
             </div>
         </div>
