@@ -15,9 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateTimerDisplay() {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
-    const str = `${minutes.toString().padStart(2, '0')}:${seconds
-      .toString()
-      .padStart(2, '0')}`;
+    const str = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     timerDisplay.textContent = str;
     timerStatus.textContent = str;
   }
@@ -143,10 +141,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderTasks();
 
-  // –– Modal Materi
+  // –– Modal Materi + Tab Switching
   const materialsModal = document.getElementById('materials-modal');
   const openMaterialsBtn = document.getElementById('open-materials');
   const closeModalBtns = document.querySelectorAll('.close-modal');
+  const subjectItems = document.querySelectorAll('.subject-list li');
+  const materialSections = document.querySelectorAll('.material-section');
 
   openMaterialsBtn.addEventListener('click', () => {
     materialsModal.style.display = 'flex';
@@ -160,9 +160,21 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   window.addEventListener('click', (e) => {
-    if (e.target.classList.contains('modal')) {
-      e.target.style.display = 'none';
+    if (e.target === materialsModal) {
+      materialsModal.style.display = 'none';
     }
+  });
+
+  subjectItems.forEach((item) => {
+    item.addEventListener('click', () => {
+      subjectItems.forEach((i) => i.classList.remove('active'));
+      materialSections.forEach((s) => s.classList.remove('active'));
+
+      item.classList.add('active');
+      const subjectId = item.getAttribute('data-subject');
+      const targetSection = document.getElementById(subjectId);
+      if (targetSection) targetSection.classList.add('active');
+    });
   });
 
   // –– PDF Viewer Materi
