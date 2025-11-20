@@ -72,7 +72,6 @@ presetBtns.forEach(btn => {
     });
 });
 
-// Task list functionality
 const taskInput = document.getElementById('task-input');
 const addTaskBtn = document.getElementById('add-task');
 const taskList = document.getElementById('task-list');
@@ -126,7 +125,6 @@ function renderTasks() {
         taskList.appendChild(li);
     });
     
-    // Update task count in stats
     document.querySelector('.stat-value').textContent = tasks.filter(t => !t.completed).length;
 }
 
@@ -154,7 +152,6 @@ taskInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') addTask();
 });
 
-// Modal functionality
 const materialsModal = document.getElementById('materials-modal');
 const pdfModal = document.getElementById('pdf-modal');
 const openMaterialsBtn = document.getElementById('open-materials');
@@ -179,39 +176,32 @@ closeModalBtns.forEach(btn => {
     });
 });
 
-// Close modal when clicking outside
 window.addEventListener('click', (e) => {
     if (e.target.classList.contains('modal')) {
         closeModal(e.target);
     }
 });
 
-// Materials navigation
 const subjectItems = document.querySelectorAll('.subject-list li');
 const materialSections = document.querySelectorAll('.material-section');
 
 subjectItems.forEach(item => {
     item.addEventListener('click', () => {
-        // Remove active class from all items
         subjectItems.forEach(i => i.classList.remove('active'));
         materialSections.forEach(s => s.classList.remove('active'));
         
-        // Add active class to clicked item
         item.classList.add('active');
         
-        // Show corresponding material section
         const subjectId = item.getAttribute('data-subject');
         document.getElementById(subjectId).classList.add('active');
     });
 });
 
-// PDF Upload functionality
 const pdfUpload = document.getElementById('pdf-upload');
 const uploadPdfBtn = document.getElementById('upload-pdf-btn');
 const pdfUploadArea = document.getElementById('pdf-upload-area');
 const fileList = document.getElementById('file-list');
 
-// Handle PDF upload area click
 uploadPdfBtn.addEventListener('click', () => {
     pdfUpload.click();
 });
@@ -220,7 +210,6 @@ pdfUploadArea.addEventListener('click', () => {
     pdfUpload.click();
 });
 
-// Handle file selection
 pdfUpload.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -232,7 +221,6 @@ pdfUpload.addEventListener('change', (e) => {
     }
 });
 
-// Handle drag and drop
 pdfUploadArea.addEventListener('dragover', (e) => {
     e.preventDefault();
     pdfUploadArea.style.borderColor = '#4361ee';
@@ -259,8 +247,6 @@ pdfUploadArea.addEventListener('drop', (e) => {
 
 // Upload PDF function
 function uploadPDF(file) {
-    // In a real application, you would upload to a server here
-    // For this demo, we'll just add it to the file list
     
     const fileItem = document.createElement('div');
     fileItem.className = 'file-item';
@@ -283,7 +269,7 @@ function uploadPDF(file) {
     const deleteBtn = fileItem.querySelector('.delete-btn');
     
     viewBtn.addEventListener('click', () => {
-        alert(`Membuka file: ${file.name}\n\nDalam aplikasi nyata, file PDF akan ditampilkan di sini.`);
+        alert(`Membuka file: ${file.name}\n\nMasih dalam tahap simulasi. Dalam aplikasi nyata, file PDF akan ditampilkan di sini.`);
     });
     
     deleteBtn.addEventListener('click', () => {
@@ -294,11 +280,9 @@ function uploadPDF(file) {
     
     fileList.appendChild(fileItem);
     
-    // Show success message
     alert(`File "${file.name}" berhasil diupload!`);
 }
 
-// Subject-specific PDF upload
 const subjectUploadAreas = document.querySelectorAll('.upload-area');
 const subjectPDFUploads = document.querySelectorAll('.pdf-upload');
 
@@ -307,7 +291,6 @@ subjectUploadAreas.forEach((area, index) => {
         subjectPDFUploads[index].click();
     });
     
-    // Drag and drop for subject areas
     area.addEventListener('dragover', (e) => {
         e.preventDefault();
         area.style.borderColor = '#4361ee';
@@ -350,14 +333,11 @@ function handleSubjectPDFUpload(file, area) {
     
     alert(`File "${file.name}" berhasil diupload untuk mata pelajaran ${subjectDisplayName}!`);
     
-    // In a real app, you would save this association and display the file in the material list
 }
 
-// Initialize
 updateTimerDisplay();
 renderTasks();
 
-// Set current task for timer
 if (tasks.length > 0) {
     const firstUncompleted = tasks.find(t => !t.completed);
     if (firstUncompleted) {
@@ -365,18 +345,15 @@ if (tasks.length > 0) {
     }
 }
 
-// Add some sample tasks if empty
 if (tasks.length === 0) {
     tasks = [
-        { text: 'Mengerjakan PR Matematika - Bab Integral', completed: false, createdAt: new Date().toISOString() },
-        { text: 'Membaca materi Fisika - Gelombang Bunyi', completed: false, createdAt: new Date().toISOString() },
-        { text: 'Mempersiapkan presentasi Sejarah', completed: true, createdAt: new Date().toISOString() }
+        { text: 'Mengerjakan tugas', completed: false, createdAt: new Date().toISOString() },
+        { text: 'Mempersiapkan ulangan', completed: true, createdAt: new Date().toISOString() }
     ];
     saveTasks();
     renderTasks();
 }
 
-// Add sample uploaded files
 const sampleFiles = [
     { name: 'Rangkuman Matematika Integral.pdf', size: '2.4' },
     { name: 'Soal Latihan Fisika Gelombang.pdf', size: '1.8' }
@@ -402,7 +379,7 @@ sampleFiles.forEach(file => {
     const deleteBtn = fileItem.querySelector('.delete-btn');
     
     viewBtn.addEventListener('click', () => {
-        alert(`Membuka file: ${file.name}\n\nDalam aplikasi nyata, file PDF akan ditampilkan di sini.`);
+        alert(`Membuka file: ${file.name}\n\nMasih dalam tahap simulasi. Dalam aplikasi nyata, file PDF akan ditampilkan di sini.`);
     });
     
     deleteBtn.addEventListener('click', () => {
@@ -413,3 +390,4 @@ sampleFiles.forEach(file => {
     
     fileList.appendChild(fileItem);
 });
+
