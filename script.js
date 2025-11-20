@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const presetBtns = document.querySelectorAll('.preset-btn');
   const activeTimer = document.getElementById('active-timer');
   const timerStatus = document.getElementById('timer-status');
-  const currentTask = document.getElementById('current-task');
 
   function updateTimerDisplay() {
     const minutes = Math.floor(timeLeft / 60);
@@ -19,9 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds
       .toString()
       .padStart(2, '0')}`;
-    timerStatus.textContent = `${minutes.toString().padStart(2, '0')}:${seconds
-      .toString()
-      .padStart(2, '0')}`;
+    timerStatus.textContent = timerDisplay.textContent;
   }
 
   function startTimer() {
@@ -34,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (timeLeft <= 0) {
         clearInterval(timerInterval);
         isRunning = false;
-        alert('Waktu belajar telah habis! Saatnya istirahat sejenak.');
+        alert('Waktu belajar habis! Istirahat dulu.');
         activeTimer.style.display = 'none';
       }
     }, 1000);
@@ -58,9 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
   pauseBtn.addEventListener('click', pauseTimer);
   resetBtn.addEventListener('click', resetTimer);
 
-  presetBtns.forEach((btn) => {
+  presetBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-      presetBtns.forEach((b) => b.classList.remove('active'));
+      presetBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       timeLeft = parseInt(btn.dataset.time) * 60;
       updateTimerDisplay();
@@ -73,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updateTimerDisplay();
 
+  // ===== Tugas / To-Do =====
   const taskInput = document.getElementById('task-input');
   const addTaskBtn = document.getElementById('add-task');
   const taskList = document.getElementById('task-list');
@@ -84,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function renderTasks() {
     taskList.innerHTML = '';
-    tasks.forEach((task, index) => {
+    tasks.forEach((task, i) => {
       const li = document.createElement('li');
       li.className = `task-item ${task.completed ? 'completed' : ''}`;
       li.innerHTML = `
@@ -103,15 +101,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const deleteBtn = li.querySelector('.delete-btn');
 
       checkbox.addEventListener('click', () => {
-        tasks[index].completed = !tasks[index].completed;
+        tasks[i].completed = !tasks[i].completed;
         saveTasks();
         renderTasks();
       });
 
       editBtn.addEventListener('click', () => {
-        const newText = prompt('Edit tugas:', tasks[index].text);
+        const newText = prompt('Edit tugas:', tasks[i].text);
         if (newText && newText.trim() !== '') {
-          tasks[index].text = newText.trim();
+          tasks[i].text = newText.trim();
           saveTasks();
           renderTasks();
         }
@@ -119,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       deleteBtn.addEventListener('click', () => {
         if (confirm('Hapus tugas ini?')) {
-          tasks.splice(index, 1);
+          tasks.splice(i, 1);
           saveTasks();
           renderTasks();
         }
@@ -129,60 +127,41 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function addTask() {
-    const text = taskInput.value.trim();
-    if (text === '') return;
-    tasks.push({ text, completed: false, createdAt: new Date().toISOString() });
+  addTaskBtn.addEventListener('click', () => {
+    const txt = taskInput.value.trim();
+    if (txt === '') return;
+    tasks.push({ text: txt, completed: false });
     saveTasks();
     renderTasks();
     taskInput.value = '';
-  }
+  });
 
-  addTaskBtn.addEventListener('click', addTask);
-  taskInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') addTask();
+  taskInput.addEventListener('keypress', e => {
+    if (e.key === 'Enter') addTaskBtn.click();
   });
 
   renderTasks();
 
-  // ===== Modal Materi & Navigasi Materi =====
+  // ===== Modal Materi =====
   const materialsModal = document.getElementById('materials-modal');
-  const pdfModal = document.getElementById('pdf-modal');
   const openMaterialsBtn = document.getElementById('open-materials');
-  const openPdfBtn = document.getElementById('open-pdf');
   const closeModalBtns = document.querySelectorAll('.close-modal');
 
   openMaterialsBtn.addEventListener('click', () => {
     materialsModal.style.display = 'flex';
   });
-  openPdfBtn.addEventListener('click', () => {
-    pdfModal.style.display = 'flex';
-  });
 
-  closeModalBtns.forEach((btn) => {
+  closeModalBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       const modal = btn.closest('.modal');
       if (modal) modal.style.display = 'none';
     });
   });
 
-  window.addEventListener('click', (e) => {
+  window.addEventListener('click', e => {
     if (e.target.classList.contains('modal')) {
       e.target.style.display = 'none';
     }
-  });
-
-  const subjectItems = document.querySelectorAll('.subject-list li');
-  const materialSections = document.querySelectorAll('.material-section');
-  subjectItems.forEach((item) => {
-    item.addEventListener('click', () => {
-      subjectItems.forEach((i) => i.classList.remove('active'));
-      materialSections.forEach((s) => s.classList.remove('active'));
-      item.classList.add('active');
-      const subjectId = item.getAttribute('data-subject');
-      const targetSection = document.getElementById(subjectId);
-      if (targetSection) targetSection.classList.add('active');
-    });
   });
 
   // ===== Viewer PDF Materi =====
@@ -192,17 +171,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const closePdfViewerBtn = document.getElementById('close-pdf-viewer');
   const pdfViewerTitle = document.getElementById('pdf-viewer-title');
 
-  openPdfButtons.forEach((btn) => {
+  openPdfButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       const pdfUrl = btn.getAttribute('data-pdf-url');
       const titleEl = btn.closest('.material-item')?.querySelector('h5');
-      const title = titleEl ? titleEl.innerText : 'Materi PDF';
+      pdfViewerTitle.textContent = titleEl ? titleEl.innerText : 'Materi PDF';
       if (pdfUrl) {
         pdfFrame.src = pdfUrl;
-        pdfViewerTitle.textContent = title;
         pdfViewerModal.style.display = 'flex';
       } else {
-        alert('URL PDF belum diset.');
+        alert('PDF URL tidak tersedia.');
       }
     });
   });
@@ -212,9 +190,10 @@ document.addEventListener('DOMContentLoaded', () => {
     pdfFrame.src = '';
   });
 
-  window.addEventListener('click', (e) => {
+  window.addEventListener('click', e => {
     if (e.target === pdfViewerModal) {
       pdfViewerModal.style.display = 'none';
       pdfFrame.src = '';
     }
   });
+});
