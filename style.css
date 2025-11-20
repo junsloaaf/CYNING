@@ -50,7 +50,7 @@ header {
 }
 
 .logo h1 {
-    font-size: 3.2rem;
+    font-size: 3.1rem;
     font-weight: 700;
 }
 
@@ -698,4 +698,5 @@ footer {
 .file-action:hover {
     color: var(--primary);
 }
+
 
