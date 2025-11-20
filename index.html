@@ -1,347 +1,193 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYNING</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYNING</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">
-                <h1>Cyber Learning</h1>
-            </div>
-        </header>
+  <div class="container">
+    <header>
+      <div class="logo"><h1>Cyber Learning</h1></div>
+    </header>
 
-        <div class="dashboard">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title"><i class="fas fa-clock"></i> Study Timer</h2>
-                </div>
-                <div class="timer-display">25:00</div>
-                <div class="timer-controls">
-                    <button class="timer-btn" id="start-timer"><i class="fas fa-play"></i></button>
-                    <button class="timer-btn" id="pause-timer"><i class="fas fa-pause"></i></button>
-                    <button class="timer-btn" id="reset-timer"><i class="fas fa-redo"></i></button>
-                </div>
-                <div class="timer-presets">
-                    <button class="preset-btn active" data-time="25">Study 25:00</button>
-                    <button class="preset-btn" data-time="15">Pendek 15:00</button>
-                    <button class="preset-btn" data-time="5">Istirahat 5:00</button>
-                </div>
-                <div id="active-timer" class="active-timer" style="display: none;">
-                    <span>Sedang Belajar: <strong id="current-task">Matematika</strong></span>
-                    <span id="timer-status">25:00</span>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title"><i class="fas fa-tasks"></i> Daftar Tugas & PR</h2>
-                </div>
-                <div class="task-input">
-                    <input type="text" id="task-input" placeholder="Tambahkan tugas baru...">
-                    <button class="btn btn-sm" id="add-task"><i class="fas fa-plus"></i> Tambah</button>
-                </div>
-                <ul class="task-list" id="task-list">
-                </ul>
-            </div>
+    <div class="dashboard">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title"><i class="fas fa-clock"></i> Study Timer</h2>
         </div>
-
-        <div class="feature-grid">
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-book-open"></i>
-                </div>
-                <h3 class="feature-title">Materi Pelajaran</h3>
-                <p class="feature-desc">Akses seluruh materi mata pelajaran Kelas 12</p>
-                <button class="btn btn-outline" id="open-materials"><i class="fas fa-external-link-alt"></i> Buka Materi</button>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-brain"></i>
-                </div>
-                <h3 class="feature-title">AI Pembelajaran</h3>
-                <p class="feature-desc">Belajar bersama dengan teknologi AI</p>
-                <a href="https://chatgpt.com" class="btn btn-outline" target="_blank" id="open-ai">
-                    <i class="fas fa-robot"></i> Tanya AI
-                </a>
-            </div>
+        <div class="timer-display">25:00</div>
+        <div class="timer-controls">
+          <button class="timer-btn" id="start-timer"><i class="fas fa-play"></i></button>
+          <button class="timer-btn" id="pause-timer"><i class="fas fa-pause"></i></button>
+          <button class="timer-btn" id="reset-timer"><i class="fas fa-redo"></i></button>
         </div>
-
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title"><i class="fas fa-star"></i> Mata Pelajaran Utama</h2>
-            </div>
-            <div class="subject-grid">
-                <div class="subject-card">
-                    <i class="fas fa-calculator subject-icon"></i>
-                    <h3>Matematika</h3>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 65%"></div>
-                    </div>
-                    <p>65% Progress</p>
-                </div>
-                <div class="subject-card">
-                    <i class="fas fa-flask subject-icon"></i>
-                    <h3>Fisika</h3>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 45%"></div>
-                    </div>
-                    <p>45% Progress</p>
-                </div>
-                <div class="subject-card">
-                    <i class="fas fa-atom subject-icon"></i>
-                    <h3>Kimia</h3>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 50%"></div>
-                    </div>
-                    <p>50% Progress</p>
-                </div>
-                <div class="subject-card">
-                    <i class="fas fa-dna subject-icon"></i>
-                    <h3>Biologi</h3>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 70%"></div>
-                    </div>
-                    <p>70% Progress</p>
-                </div>
-                <div class="subject-card">
-                    <i class="fas fa-globe-asia subject-icon"></i>
-                    <h3>Bahasa Indonesia</h3>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 80%"></div>
-                    </div>
-                    <p>80% Progress</p>
-                </div>
-                <div class="subject-card">
-                    <i class="fas fa-language subject-icon"></i>
-                    <h3>Bahasa Inggris</h3>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 75%"></div>
-                    </div>
-                    <p>75% Progress</p>
-                </div>
-            </div>
+        <div class="timer-presets">
+          <button class="preset-btn active" data-time="25">Study 25:00</button>
+          <button class="preset-btn" data-time="15">Pendek 15:00</button>
+          <button class="preset-btn" data-time="5">Istirahat 5:00</button>
         </div>
-
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title"><i class="fas fa-lightbulb"></i> Tips Belajar!</h2>
-            </div>
-            <div class="study-tips">
-                <div class="tip-item">
-                    <i class="fas fa-check-circle tip-icon"></i>
-                    <span>Gunakan teknik Pomodoro</span>
-                </div>
-                <div class="tip-item">
-                    <i class="fas fa-check-circle tip-icon"></i>
-                    <span>Buat rangkuman dengan bahasa sendiri yang mudah dimengerti</span>
-                </div>
-                <div class="tip-item">
-                    <i class="fas fa-check-circle tip-icon"></i>
-                    <span>Kerjakan latihan soal secara konsisten</span>
-                </div>
-            </div>
+        <div id="active-timer" class="active-timer" style="display: none;">
+          <span>Sedang Belajar: <strong id="current-task">Matematika</strong></span>
+          <span id="timer-status">25:00</span>
         </div>
+      </div>
 
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title"><i class="fas fa-chart-pie"></i> Statistik Belajar</h2>
-            </div>
-            <div class="stats">
-                <div class="stat-card">
-                    <div class="stat-value">6</div>
-                    <div class="stat-label">Materi Dipelajari</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">18</div>
-                    <div class="stat-label">Jam Belajar</div>
-                </div>
-            </div>
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title"><i class="fas fa-tasks"></i> Daftar Tugas & PR</h2>
         </div>
-
-        <footer>
-            <p>CYNING &copy; 2025</p>
-        </footer>
-    </div>
-
-    <div class="modal" id="materials-modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="modal-title">Materi Pelajaran Kelas 12</h3>
-          <button class="close-modal">&times;</button>
+        <div class="task-input">
+          <input type="text" id="task-input" placeholder="Tambahkan tugas baru...">
+          <button class="btn btn-sm" id="add-task"><i class="fas fa-plus"></i> Tambah</button>
         </div>
-        <div class="materials-container">
-          <div class="materials-sidebar">
-            <h4>Daftar Pelajaran</h4>
-            <ul class="subject-list">
-              <li class="active" data-subject="matematika">Matematika</li>
-              <li data-subject="fisika">Fisika</li>
-              <li data-subject="kimia">Kimia</li>
-              <li data-subject="biologi">Biologi</li>
-              <li data-subject="bahasa-indonesia">Bahasa Indonesia</li>
-              <li data-subject="bahasa-inggris">Bahasa Inggris</li>
-            </ul>
-          </div>
-          <div class="materials-content">
-            <div class="material-section active" id="matematika">
-              <h4>Materi Matematika Kelas 12</h4>
-              <div class="material-list">
-                <div class="material-item">
-                  <i class="fas fa-file-pdf"></i>
-                  <div class="material-info">
-                    <h5>Matematika</h5>
-                    <p>Konsep dasar dan teknik penyelesaian</p>
-                  </div>
-                  <button class="btn btn-sm btn-open-pdf" data-pdf-url="matematika.pdf">Buka</button>
-                </div>
-              </div>
-              <div class="upload-section">
-                <h5>Upload Materi PDF</h5>
-                <div class="upload-area" id="math-upload">
-                  <i class="fas fa-cloud-upload-alt"></i>
-                  <p>Seret file PDF ke sini atau klik untuk memilih</p>
-                  <input type="file" accept=".pdf" class="pdf-upload" id="math-pdf">
-                </div>
-              </div>
-            </div>
-
-            <div class="material-section" id="fisika">
-              <h4>Materi Fisika Kelas 12</h4>
-              <div class="material-list">
-                <div class="material-item">
-                  <i class="fas fa-file-pdf"></i>
-                  <div class="material-info">
-                    <h5>Fisika</h5>
-                    <pKonsep dasar dan teknik penyelesaian</p>
-                  </div>
-                  <button class="btn btn-sm btn-open-pdf" data-pdf-url="fisika.pdf">Buka</button>
-                </div>
-              </div>
-              <div class="upload-section">
-                <h5>Upload Materi PDF</h5>
-                <div class="upload-area" id="physics-upload">
-                  <i class="fas fa-cloud-upload-alt"></i>
-                  <p>Seret file PDF ke sini atau klik untuk memilih</p>
-                  <input type="file" accept=".pdf" class="pdf-upload" id="physics-pdf">
-                </div>
-              </div>
-            </div>
-
-            <div class="material-section" id="kimia">
-              <h4>Materi Kimia Kelas 12</h4>
-              <div class="material-list">
-                <div class="material-item">
-                  <i class="fas fa-file-pdf"></i>
-                  <div class="material-info">
-                    <h5>Kimia</h5>
-                    <p>Konsep dasar dan teknik penyelesaian</p>
-                  </div>
-                  <button class="btn btn-sm btn-open-pdf" data-pdf-url="kimia.pdf">Buka</button>
-                </div>
-              </div>
-              <div class="upload-section">
-                <h5>Upload Materi PDF</h5>
-                <div class="upload-area" id="chem-upload">
-                  <i class="fas fa-cloud-upload-alt"></i>
-                  <p>Seret file PDF ke sini atau klik untuk memilih</p>
-                  <input type="file" accept=".pdf" class="pdf-upload" id="chem-pdf">
-                </div>
-              </div>
-            </div>
-
-            <div class="material-section" id="biologi">
-              <h4>Materi Biologi Kelas 12</h4>
-              <div class="material-list">
-                <div class="material-item">
-                  <i class="fas fa-file-pdf"></i>
-                  <div class="material-info">
-                    <h5>Biologi</h5>
-                    <p>Konsep dasar dan teknik penyelesaian</p>
-                  </div>
-                  <button class="btn btn-sm btn-open-pdf" data-pdf-url="biologi.pdf">Buka</button>
-                </div>
-              </div>
-              <div class="upload-section">
-                <h5>Upload Materi PDF</h5>
-                <div class="upload-area" id="bio-upload">
-                  <i class="fas fa-cloud-upload-alt"></i>
-                  <p>Seret file PDF ke sini atau klik untuk memilih</p>
-                  <input type="file" accept=".pdf" class="pdf-upload" id="bio-pdf">
-                </div>
-              </div>
-            </div>
-
-            <div class="material-section" id="bahasa-indonesia">
-              <h4>Materi Bahasa Indonesia Kelas 12</h4>
-              <div class="material-list">
-                <div class="material-item">
-                  <i class="fas fa-file-pdf"></i>
-                  <div class="material-info">
-                    <h5>Bahasa Indonesia</h5>
-                    <p>Konsep dasar dan teknik penyelesaian</p>
-                  </div>
-                  <button class="btn btn-sm btn-open-pdf" data-pdf-url="bindo/.pdf">Buka</button>
-                </div>
-              </div>
-              <div class="upload-section">
-                <h5>Upload Materi PDF</h5>
-                <div class="upload-area" id="bindo-upload">
-                  <i class="fas fa-cloud-upload-alt"></i>
-                  <p>Seret file PDF ke sini atau klik untuk memilih</p>
-                  <input type="file" accept=".pdf" class="pdf-upload" id="bindo-pdf">
-                </div>
-              </div>
-            </div>
-
-            <div class="material-section" id="bahasa-inggris">
-              <h4>Materi Bahasa Inggris Kelas 12</h4>
-              <div class="material-list">
-                <div class="material-item">
-                  <i class="fas fa-file-pdf"></i>
-                  <div class="material-info">
-                    <h5>English</h5>
-                    <p>Konsep dasar dan teknik penyelesaian</p>
-                  </div>
-                  <button class="btn btn-sm btn-open-pdf" data-pdf-url="bing.pdf">Buka</button>
-                </div>
-              </div>
-              <div class="upload-section">
-                <h5>Upload Materi PDF</h5>
-                <div class="upload-area" id="bing-upload">
-                  <i class="fas fa-cloud-upload-alt"></i>
-                  <p>Seret file PDF ke sini atau klik untuk memilih</p>
-                  <input type="file" accept=".pdf" class="pdf-upload" id="bing-pdf">
-                </div>
-              </div>
-            </div>
-    <div class="modal" id="pdf-viewer-modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="modal-title" id="pdf-viewer-title">Materi</h3>
-          <button class="close-modal" id="close-pdf-viewer">&times;</button>
-        </div>
-        <div class="pdf-viewer-container">
-          <iframe id="pdf-frame" src="" ></iframe>
-        </div>
+        <ul class="task-list" id="task-list"></ul>
       </div>
     </div>
 
-<!-- Modal Viewer PDF -->
-<div class="modal" id="pdf-viewer-modal" style="display:none; align-items: center; justify-content: center;">
-  <div class="modal-content" style="width: 90%; height: 80vh; position: relative;">
-    <div class="modal-header">
-      <h3 class="modal-title" id="pdf-viewer-title">Materi PDF</h3>
-      <button class="close-modal" id="close-pdf-viewer">&times;</button>
-    </div>
-    <iframe id="pdf-frame" src="" style="width:100%; height:calc(100% - 50px); border: none;"></iframe>
-  </div>
-</div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-book-open"></i></div>
+        <h3 class="feature-title">Materi Pelajaran</h3>
+        <p class="feature-desc">Akses seluruh materi mata pelajaran Kelas 12</p>
+        <button class="btn btn-outline" id="open-materials"><i class="fas fa-external-link-alt"></i> Buka Materi</button>
+      </div>
 
-    <script src="script.js"></script>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-brain"></i></div>
+        <h3 class="feature-title">AI Pembelajaran</h3>
+        <p class="feature-desc">Belajar bersama dengan teknologi AI</p>
+        <a href="https://chatgpt.com" class="btn btn-outline" target="_blank" id="open-ai">
+          <i class="fas fa-robot"></i> Tanya AI
+        </a>
+      </div>
+    </div>
+
+    <footer><p>CYNING &copy; 2025</p></footer>
+  </div>
+
+  <!-- Modal Materi -->
+  <div class="modal" id="materials-modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Materi Pelajaran Kelas 12</h3>
+        <button class="close-modal">&times;</button>
+      </div>
+      <div class="materials-container">
+        <div class="materials-sidebar">
+          <h4>Daftar Pelajaran</h4>
+          <ul class="subject-list">
+            <li class="active" data-subject="matematika">Matematika</li>
+            <li data-subject="fisika">Fisika</li>
+            <li data-subject="kimia">Kimia</li>
+            <li data-subject="biologi">Biologi</li>
+            <li data-subject="bahasa-indonesia">Bahasa Indonesia</li>
+            <li data-subject="bahasa-inggris">Bahasa Inggris</li>
+          </ul>
+        </div>
+        <div class="materials-content">
+          <div class="material-section active" id="matematika">
+            <h4>Materi Matematika Kelas 12</h4>
+            <div class="material-list">
+              <div class="material-item">
+                <i class="fas fa-file-pdf"></i>
+                <div class="material-info">
+                  <h5>Matematika</h5>
+                  <p>Konsep dasar dan teknik penyelesaian</p>
+                </div>
+                <button class="btn btn-sm btn-open-pdf" data-pdf-url="matematika.pdf">Buka</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="material-section" id="fisika">
+            <h4>Materi Fisika Kelas 12</h4>
+            <div class="material-list">
+              <div class="material-item">
+                <i class="fas fa-file-pdf"></i>
+                <div class="material-info">
+                  <h5>Fisika</h5>
+                  <p>Konsep dasar dan teknik penyelesaian</p>
+                </div>
+                <button class="btn btn-sm btn-open-pdf" data-pdf-url="fisika.pdf">Buka</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="material-section" id="kimia">
+            <h4>Materi Kimia Kelas 12</h4>
+            <div class="material-list">
+              <div class="material-item">
+                <i class="fas fa-file-pdf"></i>
+                <div class="material-info">
+                  <h5>Kimia</h5>
+                  <p>Konsep dasar dan teknik penyelesaian</p>
+                </div>
+                <button class="btn btn-sm btn-open-pdf" data-pdf-url="kimia.pdf">Buka</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="material-section" id="biologi">
+            <h4>Materi Biologi Kelas 12</h4>
+            <div class="material-list">
+              <div class="material-item">
+                <i class="fas fa-file-pdf"></i>
+                <div class="material-info">
+                  <h5>Biologi</h5>
+                  <p>Konsep dasar dan teknik penyelesaian</p>
+                </div>
+                <button class="btn btn-sm btn-open-pdf" data-pdf-url="biologi.pdf">Buka</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="material-section" id="bahasa-indonesia">
+            <h4>Materi Bahasa Indonesia Kelas 12</h4>
+            <div class="material-list">
+              <div class="material-item">
+                <i class="fas fa-file-pdf"></i>
+                <div class="material-info">
+                  <h5>Bahasa Indonesia</h5>
+                  <p>Konsep dasar dan teknik penyelesaian</p>
+                </div>
+                <button class="btn btn-sm btn-open-pdf" data-pdf-url="bindo.pdf">Buka</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="material-section" id="bahasa-inggris">
+            <h4>Materi Bahasa Inggris Kelas 12</h4>
+            <div class="material-list">
+              <div class="material-item">
+                <i class="fas fa-file-pdf"></i>
+                <div class="material-info">
+                  <h5>English</h5>
+                  <p>Konsep dasar dan teknik penyelesaian</p>
+                </div>
+                <button class="btn btn-sm btn-open-pdf" data-pdf-url="bing.pdf">Buka</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Viewer PDF -->
+  <div class="modal" id="pdf-viewer-modal" style="display: none; align-items: center; justify-content: center;">
+    <div class="modal-content" style="width: 90%; height: 80vh; position: relative;">
+      <div class="modal-header">
+        <h3 class="modal-title" id="pdf-viewer-title">Materi PDF</h3>
+        <button class="close-modal" id="close-pdf-viewer">&times;</button>
+      </div>
+      <iframe id="pdf-frame" src="" style="width:100%; height:calc(100% - 50px); border: none;"></iframe>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
