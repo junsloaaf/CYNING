@@ -49,12 +49,8 @@ header {
     margin-bottom: 10px;
 }
 
-.logo i {
-    font-size: 2.5rem;
-}
-
 .logo h1 {
-    font-size: 2.2rem;
+    font-size: 3.2rem;
     font-weight: 700;
 }
 
@@ -702,3 +698,4 @@ footer {
 .file-action:hover {
     color: var(--primary);
 }
+
