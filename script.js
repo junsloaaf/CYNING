@@ -15,7 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateTimerDisplay() {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
-    const str = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    const str = `${minutes.toString().padStart(2, '0')}:${seconds
+      .toString()
+      .padStart(2, '0')}`;
     timerDisplay.textContent = str;
     timerStatus.textContent = str;
   }
@@ -54,9 +56,9 @@ document.addEventListener('DOMContentLoaded', () => {
   pauseBtn.addEventListener('click', pauseTimer);
   resetBtn.addEventListener('click', resetTimer);
 
-  presetBtns.forEach(btn => {
+  presetBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
-      presetBtns.forEach(b => b.classList.remove('active'));
+      presetBtns.forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
       timeLeft = parseInt(btn.dataset.time) * 60;
       updateTimerDisplay();
@@ -135,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
     taskInput.value = '';
   });
 
-  taskInput.addEventListener('keypress', e => {
+  taskInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') addTaskBtn.click();
   });
 
@@ -150,14 +152,14 @@ document.addEventListener('DOMContentLoaded', () => {
     materialsModal.style.display = 'flex';
   });
 
-  closeModalBtns.forEach(btn => {
+  closeModalBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
       const modal = btn.closest('.modal');
       if (modal) modal.style.display = 'none';
     });
   });
 
-  window.addEventListener('click', e => {
+  window.addEventListener('click', (e) => {
     if (e.target.classList.contains('modal')) {
       e.target.style.display = 'none';
     }
@@ -170,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const closePdfViewerBtn = document.getElementById('close-pdf-viewer');
   const pdfViewerTitle = document.getElementById('pdf-viewer-title');
 
-  openPdfButtons.forEach(btn => {
+  openPdfButtons.forEach((btn) => {
     btn.addEventListener('click', () => {
       const pdfUrl = btn.getAttribute('data-pdf-url');
       const titleEl = btn.closest('.material-item')?.querySelector('h5');
@@ -189,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
     pdfFrame.src = '';
   });
 
-  window.addEventListener('click', e => {
+  window.addEventListener('click', (e) => {
     if (e.target === pdfViewerModal) {
       pdfViewerModal.style.display = 'none';
       pdfFrame.src = '';
