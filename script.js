@@ -73,7 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updateTimerDisplay();
 
-  // ===== Tugas / To-Do List =====
   const taskInput = document.getElementById('task-input');
   const addTaskBtn = document.getElementById('add-task');
   const taskList = document.getElementById('task-list');
@@ -220,15 +219,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // ===== Upload PDF =====
+ document.addEventListener('DOMContentLoaded', () => {
   const pdfUpload = document.getElementById('pdf-upload');
   const uploadPdfBtn = document.getElementById('upload-pdf-btn');
   const pdfUploadArea = document.getElementById('pdf-upload-area');
   const fileList = document.getElementById('file-list');
 
-  uploadPdfBtn.addEventListener('click', () => pdfUpload.click());
-  pdfUploadArea.addEventListener('click', () => pdfUpload.click());
+  const pdfViewerModal = document.getElementById('pdf-viewer-modal');
+  const pdfFrame = document.getElementById('pdf-frame');
+  const pdfViewerTitle = document.getElementById('pdf-viewer-title');
+  const closePdfViewerBtn = document.getElementById('close-pdf-viewer');
 
+  const closeUploadModalBtn = document.getElementById('close-upload-modal');
+
+  // Tombol pilih file
+  uploadPdfBtn.addEventListener('click', () => {
+    pdfUpload.click();
+  });
+
+  // Klik area upload
+  pdfUploadArea.addEventListener('click', () => {
+    pdfUpload.click();
+  });
+
+  // Upload via input
   pdfUpload.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file && file.type === 'application/pdf') {
@@ -238,6 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Drag & drop
   pdfUploadArea.addEventListener('dragover', (e) => {
     e.preventDefault();
     pdfUploadArea.style.borderColor = '#4361ee';
@@ -261,21 +276,40 @@ document.addEventListener('DOMContentLoaded', () => {
     pdfUploadArea.style.backgroundColor = 'transparent';
   });
 
+  // Tutup modal upload
+  closeUploadModalBtn.addEventListener('click', () => {
+    document.getElementById('pdf-modal').style.display = 'none';
+  });
+
+  // Tutup modal viewer
+  closePdfViewerBtn.addEventListener('click', () => {
+    pdfViewerModal.style.display = 'none';
+    pdfFrame.src = '';
+  });
+
+  // Klik di luar modal viewer
+  window.addEventListener('click', (e) => {
+    if (e.target === pdfViewerModal) {
+      pdfViewerModal.style.display = 'none';
+      pdfFrame.src = '';
+    }
+  });
+
   function handleUpload(file) {
     const fileItem = document.createElement('div');
     fileItem.className = 'file-item';
-    const fileSize = (file.size / (1024 * 1024)).toFixed(2);
-    const fileURL = URL.createObjectURL(file); // pakai Object URL dari File API :contentReference[oaicite:0]{index=0}
+    const fileSize = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+    const fileURL = URL.createObjectURL(file);
 
     fileItem.innerHTML = `
       <i class="fas fa-file-pdf"></i>
       <div class="file-info">
         <h5>${file.name}</h5>
-        <p>${fileSize} MB • Baru saja diupload</p>
+        <p>${fileSize} • Baru saja diupload</p>
       </div>
       <div class="file-actions">
-        <button class="file-action view-btn"><i class="fas fa-eye"></i></button>
-        <button class="file-action delete-btn"><i class="fas fa-trash"></i></button>
+        <button class="file-action view-btn">Lihat</button>
+        <button class="file-action delete-btn">Hapus</button>
       </div>
     `;
 
@@ -299,5 +333,6 @@ document.addEventListener('DOMContentLoaded', () => {
     pdfUpload.value = '';
     alert(`File "${file.name}" berhasil diupload!`);
   }
+});
 
-}); // end DOMContentLoaded
+
