@@ -1,4 +1,4 @@
-// Timer functionality
+
 let timerInterval;
 let timeLeft = 25 * 60; // 25 minutes in seconds
 let isRunning = false;
@@ -11,7 +11,7 @@ const presetBtns = document.querySelectorAll('.preset-btn');
 const activeTimer = document.getElementById('active-timer');
 const timerStatus = document.getElementById('timer-status');
 const currentTask = document.getElementById('current-task');
-// PDF viewer modal logic
+
 const openPdfButtons = document.querySelectorAll('.btn-open-pdf');
 const pdfViewerModal = document.getElementById('pdf-viewer-modal');
 const pdfFrame = document.getElementById('pdf-frame');
@@ -274,43 +274,54 @@ pdfUploadArea.addEventListener('drop', (e) => {
     }
 });
 
-// Upload PDF function
 function uploadPDF(file) {
-    
-    const fileItem = document.createElement('div');
-    fileItem.className = 'file-item';
-    
-    const fileSize = (file.size / (1024 * 1024)).toFixed(2); // Convert to MB
-    
-    fileItem.innerHTML = `
-        <i class="fas fa-file-pdf"></i>
-        <div class="file-info">
-            <h5>${file.name}</h5>
-            <p>${fileSize} MB • Baru saja diupload</p>
-        </div>
-        <div class="file-actions">
-            <button class="file-action view-btn"><i class="fas fa-eye"></i></button>
-            <button class="file-action delete-btn"><i class="fas fa-trash"></i></button>
-        </div>
-    `;
-    
-    const viewBtn = fileItem.querySelector('.view-btn');
-    const deleteBtn = fileItem.querySelector('.delete-btn');
-    
-    viewBtn.addEventListener('click', () => {
-        alert(`Membuka file: ${file.name}\n\nMasih dalam tahap simulasi. Dalam aplikasi nyata, file PDF akan ditampilkan di sini.`);
-    });
-    
-    deleteBtn.addEventListener('click', () => {
-        if (confirm(`Hapus file ${file.name}?`)) {
-            fileItem.remove();
-        }
-    });
-    
-    fileList.appendChild(fileItem);
-    
-    alert(`File "${file.name}" berhasil diupload!`);
+  const fileItem = document.createElement('div');
+  fileItem.className = 'file-item';
+
+  const fileSize = (file.size / (1024 * 1024)).toFixed(2); // MB
+
+  // Buat URL objek dari file PDF agar bisa diembed / dilihat di iframe
+  const fileURL = URL.createObjectURL(file); // pakai Web File API :contentReference[oaicite:0]{index=0}
+
+  fileItem.innerHTML = `
+    <i class="fas fa-file-pdf"></i>
+    <div class="file-info">
+      <h5>${file.name}</h5>
+      <p>${fileSize} MB • Baru saja diupload</p>
+    </div>
+    <div class="file-actions">
+      <button class="file-action view-btn"><i class="fas fa-eye"></i></button>
+      <button class="file-action delete-btn"><i class="fas fa-trash"></i></button>
+    </div>
+  `;
+
+  const viewBtn = fileItem.querySelector('.view-btn');
+  const deleteBtn = fileItem.querySelector('.delete-btn');
+
+  viewBtn.addEventListener('click', () => {
+    // Ketika klik "view", buka modal viewer PDF dan set iframe src ke URL objek
+    const pdfViewerModal = document.getElementById('pdf-viewer-modal');
+    const pdfFrame = document.getElementById('pdf-frame');
+    const pdfViewerTitle = document.getElementById('pdf-viewer-title');
+
+    pdfFrame.src = fileURL;
+    pdfViewerTitle.textContent = file.name;
+    pdfViewerModal.style.display = 'flex';
+  });
+
+  deleteBtn.addEventListener('click', () => {
+    if (confirm(`Hapus file ${file.name}?`)) {
+      URL.revokeObjectURL(fileURL); // bersihkan URL objek karena tidak dipakai lagi
+      fileItem.remove();
+    }
+  });
+
+  fileList.appendChild(fileItem);
+
+  // Mengosongkan input file agar bisa upload file yang sama lagi jika ingin
+  pdfUpload.value = '';
 }
+
 
 const subjectUploadAreas = document.querySelectorAll('.upload-area');
 const subjectPDFUploads = document.querySelectorAll('.pdf-upload');
@@ -419,5 +430,6 @@ sampleFiles.forEach(file => {
     
     fileList.appendChild(fileItem);
 });
+
 
 
