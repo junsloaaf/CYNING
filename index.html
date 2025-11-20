@@ -187,317 +187,319 @@
     </div>
 
 <div class="modal" id="materials-modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3 class="modal-title">Materi Pelajaran Kelas 12</h3>
-      <button class="close-modal">&times;</button>
-    </div>
-    <div class="materials-container">
-      <div class="materials-sidebar">
-        <h4>Daftar Pelajaran</h4>
-        <ul class="subject-list">
-          <li class="active" data-subject="matematika">Matematika</li>
-          <li data-subject="fisika">Fisika</li>
-          <li data-subject="kimia">Kimia</li>
-          <li data-subject="biologi">Biologi</li>
-          <li data-subject="bahasa-indonesia">Bahasa Indonesia</li>
-          <li data-subject="bahasa-inggris">Bahasa Inggris</li>
-          <li data-subject="sejarah">Sejarah</li>
-          <li data-subject="ekonomi">Ekonomi</li>
-        </ul>
-      </div>
-      <div class="materials-content">
-        <div class="material-section active" id="matematika">
-          <h4>Materi Matematika Kelas 12</h4>
-          <div class="material-list">
-            <div class="material-item">
-              <i class="fas fa-file-pdf"></i>
-              <div class="material-info">
-                <h5>Integral Tak Tentu</h5>
-                <p>Konsep dasar integral dan teknik penyelesaian</p>
-              </div>
-              <button class="btn btn-sm btn-open-pdf" data-pdf-url="materi/matematika/integral_tak_tentu.pdf">Buka</button>
-            </div>
-            <div class="material-item">
-              <i class="fas fa-file-pdf"></i>
-              <div class="material-info">
-                <h5>Integral Tentu</h5>
-                <p>Aplikasi integral dalam menghitung luas</p>
-              </div>
-              <button class="btn btn-sm btn-open-pdf" data-pdf-url="materi/matematika/integral_tentu.pdf">Buka</button>
-            </div>
-            <div class="material-item">
-              <i class="fas fa-file-pdf"></i>
-              <div class="material-info">
-                <h5>Trigonometri Lanjutan</h5>
-                <p>Fungsi trigonometri dan identitas</p>
-              </div>
-              <button class="btn btn-sm btn-open-pdf" data-pdf-url="materi/matematika/trigonometri_lanjutan.pdf">Buka</button>
-            </div>
-          </div>
-          <div class="upload-section">
-            <h5>Upload Materi PDF</h5>
-            <div class="upload-area" id="math-upload">
-              <i class="fas fa-cloud-upload-alt"></i>
-              <p>Seret file PDF ke sini atau klik untuk memilih</p>
-              <input type="file" accept=".pdf" class="pdf-upload" id="math-pdf">
-            </div>
-          </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Materi Pelajaran Kelas 12</h3>
+          <button class="close-modal">&times;</button>
         </div>
-
-        <div class="material-section" id="fisika">
-          <h4>Materi Fisika Kelas 12</h4>
-          <div class="material-list">
-            <div class="material-item">
-              <i class="fas fa-file-pdf"></i>
-              <div class="material-info">
-                <h5>Listrik Statis</h5>
-                <p>Muatan listrik dan hukum Coulomb</p>
-              </div>
-              <button class="btn btn-sm btn-open-pdf" data-pdf-url="materi/fisika/listrik_statis.pdf">Buka</button>
-            </div>
-            <div class="material-item">
-              <i class="fas fa-file-pdf"></i>
-              <div class="material-info">
-                <h5>Gelombang Elektromagnetik</h5>
-                <p>Sifat dan aplikasi gelombang EM</p>
-              </div>
-              <button class="btn btn-sm btn-open-pdf" data-pdf-url="materi/fisika/gelombang_elektromagnetik.pdf">Buka</button>
-            </div>
+        <div class="materials-container">
+          <div class="materials-sidebar">
+            <h4>Daftar Pelajaran</h4>
+            <ul class="subject-list">
+              <li class="active" data-subject="matematika">Matematika</li>
+              <li data-subject="fisika">Fisika</li>
+              <li data-subject="kimia">Kimia</li>
+              <li data-subject="biologi">Biologi</li>
+              <li data-subject="bahasa-indonesia">Bahasa Indonesia</li>
+              <li data-subject="bahasa-inggris">Bahasa Inggris</li>
+              <li data-subject="sejarah">Sejarah</li>
+              <li data-subject="ekonomi">Ekonomi</li>
+            </ul>
           </div>
-          <div class="upload-section">
-            <h5>Upload Materi PDF</h5>
-            <div class="upload-area" id="physics-upload">
-              <i class="fas fa-cloud-upload-alt"></i>
-              <p>Seret file PDF ke sini atau klik untuk memilih</p>
-              <input type="file" accept=".pdf" class="pdf-upload" id="physics-pdf">
-            </div>
-          </div>
-        </div>
-
-        <div class="material-section" id="kimia">
-          <h4>Materi Kimia Kelas 12</h4>
-          <div class="material-list">
-            <div class="material-item">
-              <i class="fas fa-file-pdf"></i>
-              <div class="material-info">
-                <h5>Struktur Atom Lanjutan</h5>
-                <p>Model atom, orbit, dan energi</p>
-              </div>
-              <button class="btn btn-sm btn-open-pdf" data-pdf-url="materi/kimia/struktur_atom.pdf">Buka</button>
-            </div>
-            <div class="material-item">
-              <i class="fas fa-file-pdf"></i>
-              <div class="material-info">
-                <h5>Reaksi Redoks</h5>
-                <p>Konsep oksidasi dan reduksi</p>
-              </div>
-              <button class="btn btn-sm btn-open-pdf" data-pdf-url="materi/kimia/reaksi_redoks.pdf">Buka</button>
-            </div>
-          </div>
-          <div class="upload-section">
-            <h5>Upload Materi PDF</h5>
-            <div class="upload-area" id="chem-upload">
-              <i class="fas fa-cloud-upload-alt"></i>
-              <p>Seret file PDF ke sini atau klik untuk memilih</p>
-              <input type="file" accept=".pdf" class="pdf-upload" id="chem-pdf">
-            </div>
-          </div>
-        </div>
-
-        <div class="material-section" id="biologi">
-          <h4>Materi Biologi Kelas 12</h4>
-          <div class="material-list">
-            <div class="material-item">
-              <i class="fas fa-file-pdf"></i>
-              <div class="material-info">
-                <h5>Genetika Molekuler</h5>
-                <p>DNA, RNA, dan ekspresi gen</p>
-              </div>
-              <button class="btn btn-sm btn-open-pdf" data-pdf-url="materi/biologi/genetika_molekuler.pdf">Buka</button>
-            </div>
-            <div class="material-item">
-              <i class="fas fa-file-pdf"></i>
-              <div class="material-info">
-                <h5>Ekologi dan Lingkungan</h5>
-                <p>Interaksi organisme dan ekosistem</p>
-              </div>
-              <button class="btn btn-sm btn-open-pdf" data-pdf-url="materi/biologi/ekologi_lingkungan.pdf">Buka</button>
-            </div>
-          </div>
-          <div class="upload-section">
-            <h5>Upload Materi PDF</h5>
-            <div class="upload-area" id="bio-upload">
-              <i class="fas fa-cloud-upload-alt"></i>
-              <p>Seret file PDF ke sini atau klik untuk memilih</p>
-              <input type="file" accept=".pdf" class="pdf-upload" id="bio-pdf">
-            </div>
-          </div>
-        </div>
-
-        <div class="material-section" id="bahasa-indonesia">
-          <h4>Materi Bahasa Indonesia Kelas 12</h4>
-          <div class="material-list">
-            <div class="material-item">
-              <i class="fas fa-file-pdf"></i>
-              <div class="material-info">
-                <h5>Sastra Indonesia</h5>
-                <p>Puisi, prosa, drama</p>
-              </div>
-              <button class="btn btn-sm btn-open-pdf" data-pdf-url="materi/bindo/sastra_indonesia.pdf">Buka</button>
-            </div>
-            <div class="material-item">
-              <i class="fas fa-file-pdf"></i>
-              <div class="material-info">
-                <h5>Teks Argumentatif</h5>
-                <p>Struktur dan contoh argumentasi</p>
-              </div>
-              <button class="btn btn-sm btn-open-pdf" data-pdf-url="materi/bindo/teks_argumentatif.pdf">Buka</button>
-            </div>
-          </div>
-          <div class="upload-section">
-            <h5>Upload Materi PDF</h5>
-            <div class="upload-area" id="bindo-upload">
-              <i class="fas fa-cloud-upload-alt"></i>
-              <p>Seret file PDF ke sini atau klik untuk memilih</p>
-              <input type="file" accept=".pdf" class="pdf-upload" id="bindo-pdf">
-            </div>
-          </div>
-        </div>
-
-        <div class="material-section" id="bahasa-inggris">
-          <h4>Materi Bahasa Inggris Kelas 12</h4>
-          <div class="material-list">
-            <div class="material-item">
-              <i class="fas fa-file-pdf"></i>
-              <div class="material-info">
-                <h5>Reading Comprehension</h5>
-                <p>Teknik membaca dan analisis teks</p>
-              </div>
-              <button class="btn btn-sm btn-open-pdf" data-pdf-url="materi/bing/reading_comprehension.pdf">Buka</button>
-            </div>
-            <div class="material-item">
-              <i class="fas fa-file-pdf"></i>
-              <div class="material-info">
-                <h5>Grammar Advanced</h5>
-                <p>Tenses, modals, conditional</p>
-              </div>
-              <button class="btn btn-sm btn-open-pdf" data-pdf-url="materi/bing/grammar_advanced.pdf">Buka</button>
-            </div>
-          </div>
-          <div class="upload-section">
-            <h5>Upload Materi PDF</h5>
-            <div class="upload-area" id="bing-upload">
-              <i class="fas fa-cloud-upload-alt"></i>
-              <p>Seret file PDF ke sini atau klik untuk memilih</p>
-              <input type="file" accept=".pdf" class="pdf-upload" id="bing-pdf">
-            </div>
-          </div>
-        </div>
-
-        <div class="material-section" id="sejarah">
-          <h4>Materi Sejarah Kelas 12</h4>
-          <div class="material-list">
-            <div class="material-item">
-              <i class="fas fa-file-pdf"></i>
-              <div class="material-info">
-                <h5>Perang Dunia II</h5>
-                <p>Akar, aliansi dan efek global</p>
-              </div>
-              <button class="btn btn-sm btn-open-pdf" data-pdf-url="materi/sejarah/perang_dunia_ii.pdf">Buka</button>
-            </div>
-            <div class="material-item">
-              <i class="fas fa-file-pdf"></i>
-              <div class="material-info">
-                <h5>Sejarah Indonesia Modern</h5>
-                <p>Pergerakan nasional dan kemerdekaan Indonesia</p>
-              </div>
-              <button class="btn btn-sm btn-open-pdf" data-pdf-url="materi/sejarah/sejarah_indonesia_modern.pdf">Buka</button>
-            </div>
-          </div>
-          <div class="upload-section">
-            <h5>Upload Materi PDF</h5>
-            <div class="upload-area" id="history-upload">
-              <i class="fas fa-cloud-upload-alt"></i>
-              <p>Seret file PDF ke sini atau klik untuk memilih</p>
-              <input type="file" accept=".pdf" class="pdf-upload" id="history-pdf">
-            </div>
-          </div>
-        </div>
-
-        <div class="material-section" id="ekonomi">
-          <h4>Materi Ekonomi Kelas 12</h4>
-          <div class="material-list">
-            <div class="material-item">
-              <i class="fas fa-file-pdf"></i>
-              <div class="material-info">
-                <h5>Permintaan & Penawaran</h5>
-                <p>Hukum, elastisitas, dan aplikasi</p>
-              </div>
-              <button class="btn btn-sm btn-open-pdf" data-pdf-url="materi/ekonomi/permintaan_penawaran.pdf">Buka</button>
-            </div>
-            <div class="material-item">
-              <i class="fas fa-file-pdf"></i>
-              <div class="material-info">
-                <h5>Perekonomian Mikro vs Makro</h5>
-                <p>Perbedaan, contoh, dan implikasi</p>
-              </div>
-              <button class="btn btn-sm btn-open-pdf" data-pdf-url="materi/ekonomi/perekonomian_mikro_makro.pdf">Buka</button>
-            </div>
-          </div>
-          <div class="upload-section">
-            <h5>Upload Materi PDF</h5>
-            <div class="upload-area" id="econ-upload">
-              <i class="fas fa-cloud-upload-alt"></i>
-              <p>Seret file PDF ke sini atau klik untuk memilih</p>
-              <input type="file" accept=".pdf" class="pdf-upload" id="econ-pdf">
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal viewer PDF -->
-<div class="modal" id="pdf-viewer-modal">
-  <div class="modal-content" style="max-width: 90%; max-height: 90%; padding: 0;">
-    <div class="modal-header">
-      <h3 class="modal-title" id="pdf-viewer-title">Materi</h3>
-      <button class="close-modal" id="close-pdf-viewer">&times;</button>
-    </div>
-    <iframe id="pdf-frame" src="" style="width:100%; height:calc(100% - 50px);" frameborder="0"></iframe>
-  </div>
-</div>
-
-                    
+          <div class="materials-content">
+            <!-- Matematika -->
+            <div class="material-section active" id="matematika">
+              <h4>Materi Matematika Kelas 12</h4>
+              <div class="material-list">
+                <div class="material-item">
+                  <i class="fas fa-file-pdf"></i>
+                  <div class="material-info">
+                    <h5>Integral Tak Tentu</h5>
+                    <p>Konsep dasar integral dan teknik penyelesaian</p>
+                  </div>
+                  <button class="btn btn-sm btn-open-pdf" data-pdf-url="">Buka</button>
                 </div>
+                <div class="material-item">
+                  <i class="fas fa-file-pdf"></i>
+                  <div class="material-info">
+                    <h5>Integral Tentu</h5>
+                    <p>Aplikasi integral dalam menghitung luas</p>
+                  </div>
+                  <button class="btn btn-sm btn-open-pdf" data-pdf-url="">Buka</button>
+                </div>
+                <div class="material-item">
+                  <i class="fas fa-file-pdf"></i>
+                  <div class="material-info">
+                    <h5>Trigonometri Lanjutan</h5>
+                    <p>Fungsi trigonometri dan identitas</p>
+                  </div>
+                  <button class="btn btn-sm btn-open-pdf" data-pdf-url="">Buka</button>
+                </div>
+              </div>
+              <div class="upload-section">
+                <h5>Upload Materi PDF</h5>
+                <div class="upload-area" id="math-upload">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <p>Seret file PDF ke sini atau klik untuk memilih</p>
+                  <input type="file" accept=".pdf" class="pdf-upload" id="math-pdf">
+                </div>
+              </div>
             </div>
+
+            <!-- Fisika -->
+            <div class="material-section" id="fisika">
+              <h4>Materi Fisika Kelas 12</h4>
+              <div class="material-list">
+                <div class="material-item">
+                  <i class="fas fa-file-pdf"></i>
+                  <div class="material-info">
+                    <h5>Listrik Statis</h5>
+                    <p>Muatan listrik dan hukum Coulomb</p>
+                  </div>
+                  <button class="btn btn-sm btn-open-pdf" data-pdf-url="">Buka</button>
+                </div>
+                <div class="material-item">
+                  <i class="fas fa-file-pdf"></i>
+                  <div class="material-info">
+                    <h5>Gelombang Elektromagnetik</h5>
+                    <p>Sifat dan aplikasi gelombang EM</p>
+                  </div>
+                  <button class="btn btn-sm btn-open-pdf" data-pdf-url="">Buka</button>
+                </div>
+              </div>
+              <div class="upload-section">
+                <h5>Upload Materi PDF</h5>
+                <div class="upload-area" id="physics-upload">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <p>Seret file PDF ke sini atau klik untuk memilih</p>
+                  <input type="file" accept=".pdf" class="pdf-upload" id="physics-pdf">
+                </div>
+              </div>
+            </div>
+
+            <!-- Kimia -->
+            <div class="material-section" id="kimia">
+              <h4>Materi Kimia Kelas 12</h4>
+              <div class="material-list">
+                <div class="material-item">
+                  <i class="fas fa-file-pdf"></i>
+                  <div class="material-info">
+                    <h5>Struktur Atom Lanjutan</h5>
+                    <p>Model atom, orbit, dan energi</p>
+                  </div>
+                  <button class="btn btn-sm btn-open-pdf" data-pdf-url="">Buka</button>
+                </div>
+                <div class="material-item">
+                  <i class="fas fa-file-pdf"></i>
+                  <div class="material-info">
+                    <h5>Reaksi Redoks</h5>
+                    <p>Konsep oksidasi dan reduksi</p>
+                  </div>
+                  <button class="btn btn-sm btn-open-pdf" data-pdf-url="">Buka</button>
+                </div>
+              </div>
+              <div class="upload-section">
+                <h5>Upload Materi PDF</h5>
+                <div class="upload-area" id="chem-upload">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <p>Seret file PDF ke sini atau klik untuk memilih</p>
+                  <input type="file" accept=".pdf" class="pdf-upload" id="chem-pdf">
+                </div>
+              </div>
+            </div>
+
+            <!-- Biologi -->
+            <div class="material-section" id="biologi">
+              <h4>Materi Biologi Kelas 12</h4>
+              <div class="material-list">
+                <div class="material-item">
+                  <i class="fas fa-file-pdf"></i>
+                  <div class="material-info">
+                    <h5>Genetika Molekuler</h5>
+                    <p>DNA, RNA, dan ekspresi gen</p>
+                  </div>
+                  <button class="btn btn-sm btn-open-pdf" data-pdf-url="">Buka</button>
+                </div>
+                <div class="material-item">
+                  <i class="fas fa-file-pdf"></i>
+                  <div class="material-info">
+                    <h5>Ekologi dan Lingkungan</h5>
+                    <p>Interaksi organisme dan ekosistem</p>
+                  </div>
+                  <button class="btn btn-sm btn-open-pdf" data-pdf-url="">Buka</button>
+                </div>
+              </div>
+              <div class="upload-section">
+                <h5>Upload Materi PDF</h5>
+                <div class="upload-area" id="bio-upload">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <p>Seret file PDF ke sini atau klik untuk memilih</p>
+                  <input type="file" accept=".pdf" class="pdf-upload" id="bio-pdf">
+                </div>
+              </div>
+            </div>
+
+            <!-- Bahasa Indonesia -->
+            <div class="material-section" id="bahasa-indonesia">
+              <h4>Materi Bahasa Indonesia Kelas 12</h4>
+              <div class="material-list">
+                <div class="material-item">
+                  <i class="fas fa-file-pdf"></i>
+                  <div class="material-info">
+                    <h5>Sastra Indonesia</h5>
+                    <p>Puisi, prosa, drama</p>
+                  </div>
+                  <button class="btn btn-sm btn-open-pdf" data-pdf-url="">Buka</button>
+                </div>
+                <div class="material-item">
+                  <i class="fas fa-file-pdf"></i>
+                  <div class="material-info">
+                    <h5>Teks Argumentatif</h5>
+                    <p>Struktur dan contoh argumentasi</p>
+                  </div>
+                  <button class="btn btn-sm btn-open-pdf" data-pdf-url="">Buka</button>
+                </div>
+              </div>
+              <div class="upload-section">
+                <h5>Upload Materi PDF</h5>
+                <div class="upload-area" id="bindo-upload">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <p>Seret file PDF ke sini atau klik untuk memilih</p>
+                  <input type="file" accept=".pdf" class="pdf-upload" id="bindo-pdf">
+                </div>
+              </div>
+            </div>
+
+            <!-- Bahasa Inggris -->
+            <div class="material-section" id="bahasa-inggris">
+              <h4>Materi Bahasa Inggris Kelas 12</h4>
+              <div class="material-list">
+                <div class="material-item">
+                  <i class="fas fa-file-pdf"></i>
+                  <div class="material-info">
+                    <h5>Reading Comprehension</h5>
+                    <p>Teknik membaca dan analisis teks</p>
+                  </div>
+                  <button class="btn btn-sm btn-open-pdf" data-pdf-url="">Buka</button>
+                </div>
+                <div class="material-item">
+                  <i class="fas fa-file-pdf"></i>
+                  <div class="material-info">
+                    <h5>Grammar Advanced</h5>
+                    <p>Tenses, modals, conditional</p>
+                  </div>
+                  <button class="btn btn-sm btn-open-pdf" data-pdf-url="">Buka</button>
+                </div>
+              </div>
+              <div class="upload-section">
+                <h5>Upload Materi PDF</h5>
+                <div class="upload-area" id="bing-upload">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <p>Seret file PDF ke sini atau klik untuk memilih</p>
+                  <input type="file" accept=".pdf" class="pdf-upload" id="bing-pdf">
+                </div>
+              </div>
+            </div>
+
+            <!-- Sejarah -->
+            <div class="material-section" id="sejarah">
+              <h4>Materi Sejarah Kelas 12</h4>
+              <div class="material-list">
+                <div class="material-item">
+                  <i class="fas fa-file-pdf"></i>
+                  <div class="material-info">
+                    <h5>Perang Dunia II</h5>
+                    <p>Akar, aliansi dan efek global</p>
+                  </div>
+                  <button class="btn btn-sm btn-open-pdf" data-pdf-url="">Buka</button>
+                </div>
+                <div class="material-item">
+                  <i class="fas fa-file-pdf"></i>
+                  <div class="material-info">
+                    <h5>Sejarah Indonesia Modern</h5>
+                    <p>Pergerakan nasional dan kemerdekaan Indonesia</p>
+                  </div>
+                  <button class="btn btn-sm btn-open-pdf" data-pdf-url="">Buka</button>
+                </div>
+              </div>
+              <div class="upload-section">
+                <h5>Upload Materi PDF</h5>
+                <div class="upload-area" id="history-upload">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <p>Seret file PDF ke sini atau klik untuk memilih</p>
+                  <input type="file" accept=".pdf" class="pdf-upload" id="history-pdf">
+                </div>
+              </div>
+            </div>
+
+            <!-- Ekonomi -->
+            <div class="material-section" id="ekonomi">
+              <h4>Materi Ekonomi Kelas 12</h4>
+              <div class="material-list">
+                <div class="material-item">
+                  <i class="fas fa-file-pdf"></i>
+                  <div class="material-info">
+                    <h5>Permintaan & Penawaran</h5>
+                    <p>Hukum, elastisitas, dan aplikasi</p>
+                  </div>
+                  <button class="btn btn-sm btn-open-pdf" data-pdf-url="">Buka</button>
+                </div>
+                <div class="material-item">
+                  <i class="fas fa-file-pdf"></i>
+                  <div class="material-info">
+                    <h5>Perekonomian Mikro vs Makro</h5>
+                    <p>Perbedaan, contoh, dan implikasi</p>
+                  </div>
+                  <button class="btn btn-sm btn-open-pdf" data-pdf-url="">Buka</button>
+                </div>
+              </div>
+              <div class="upload-section">
+                <h5>Upload Materi PDF</h5>
+                <div class="upload-area" id="econ-upload">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <p>Seret file PDF ke sini atau klik untuk memilih</p>
+                  <input type="file" accept=".pdf" class="pdf-upload" id="econ-pdf">
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
+      </div>
     </div>
 
+    <!-- Modal viewer PDF -->
+    <div class="modal" id="pdf-viewer-modal">
+      <div class="modal-content" style="max-width:90%; max-height:90%; padding:0;">
+        <div class="modal-header">
+          <h3 class="modal-title" id="pdf-viewer-title">Materi</h3>
+          <button class="close-modal" id="close-pdf-viewer">&times;</button>
+        </div>
+        <iframe id="pdf-frame" src="" style="width:100%; height:calc(100% - 50px);" frameborder="0"></iframe>
+      </div>
+    </div>
+
+    <!-- Modal Upload PDF (sama seperti milikmu) -->
     <div class="modal" id="pdf-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Unggah Materi PDF</h3>
-                <button class="close-modal">&times;</button>
-            </div>
-            <p>Unggah file PDF materi pelajaran Anda di sini:</p>
-            <div class="upload-area-large" id="pdf-upload-area">
-                <i class="fas fa-file-pdf"></i>
-                <p>Seret file PDF ke sini atau klik untuk memilih</p>
-                <input type="file" accept=".pdf" id="pdf-upload">
-                <button class="btn" id="upload-pdf-btn">Pilih File</button>
-            </div>
-            <div class="uploaded-files">
-                <h4>File Terupload</h4>
-                <div class="file-list" id="file-list">
-                </div>
-            </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Unggah Materi PDF</h3>
+          <button class="close-modal">&times;</button>
         </div>
+        <p>Unggah file PDF materi pelajaran Anda di sini:</p>
+        <div class="upload-area-large" id="pdf-upload-area">
+          <i class="fas fa-file-pdf"></i>
+          <p>Seret file PDF ke sini atau klik untuk memilih</p>
+          <input type="file" accept=".pdf" id="pdf-upload">
+          <button class="btn" id="upload-pdf-btn">Pilih File</button>
+        </div>
+        <div class="uploaded-files">
+          <h4>File Terupload</h4>
+          <div class="file-list" id="file-list"></div>
+        </div>
+      </div>
     </div>
 
     <script src="script.js"></script>
 </body>
 </html>
-
