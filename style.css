@@ -1,19 +1,19 @@
 :root {
-    --primary: #4361ee;
-    --secondary: #3a0ca3;
-    --accent: #4cc9f0;
+    --primary: #7ca8d0;
+    --secondary: #b7cede;
+    --accent: #6276a5;
     --light: #f8f9fa;
     --dark: #212529;
     --success: #4bb543;
     --warning: #ff9f1c;
     --danger: #e63946;
-    --card-bg: #ffffff;
-    --shadow: 0 4px 12px rgba(0,0,0,0.08);
+    --card-bg: #fafcfb;
+    --shadow: 0 4px 12px rgba(57, 65, 121, 0.08);
 }
 
 * {
     margin: 0;
-    padding: 0;
+    padding: 1px;
     box-sizing: border-box;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -26,16 +26,16 @@ body {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1300px;
     margin: 0 auto;
     padding: 20px;
 }
 
 header {
     background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-    color: white;
+    color: #ffffff;
     padding: 30px 0;
-    border-radius: 16px;
+    border-radius: 10px;
     box-shadow: var(--shadow);
     margin-bottom: 30px;
     text-align: center;
@@ -80,9 +80,10 @@ header {
 
 .card {
     background: var(--card-bg);
-    border-radius: 16px;
+    border-radius: 10px;
     padding: 25px;
     box-shadow: var(--shadow);
+    margin-bottom: 16px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -122,7 +123,7 @@ header {
 
 .feature-card {
     background: var(--card-bg);
-    border-radius: 16px;
+    border-radius: 10px;
     padding: 25px;
     box-shadow: var(--shadow);
     transition: all 0.3s ease;
