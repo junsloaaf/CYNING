@@ -11,6 +11,35 @@ const presetBtns = document.querySelectorAll('.preset-btn');
 const activeTimer = document.getElementById('active-timer');
 const timerStatus = document.getElementById('timer-status');
 const currentTask = document.getElementById('current-task');
+// PDF viewer modal logic
+const openPdfButtons = document.querySelectorAll('.btn-open-pdf');
+const pdfViewerModal = document.getElementById('pdf-viewer-modal');
+const pdfFrame = document.getElementById('pdf-frame');
+const closePdfViewerBtn = document.getElementById('close-pdf-viewer');
+const pdfViewerTitle = document.getElementById('pdf-viewer-title');
+
+openPdfButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const pdfUrl = btn.getAttribute('data-pdf-url');
+    const title = btn.closest('.material-item').querySelector('h5').innerText;
+    pdfFrame.src = pdfUrl;
+    pdfViewerTitle.textContent = title;
+    pdfViewerModal.style.display = 'flex';
+  });
+});
+
+closePdfViewerBtn.addEventListener('click', () => {
+  pdfViewerModal.style.display = 'none';
+  pdfFrame.src = '';
+});
+
+window.addEventListener('click', (e) => {
+  if (e.target === pdfViewerModal) {
+    pdfViewerModal.style.display = 'none';
+    pdfFrame.src = '';
+  }
+});
+
 
 function updateTimerDisplay() {
     const minutes = Math.floor(timeLeft / 60);
@@ -390,4 +419,5 @@ sampleFiles.forEach(file => {
     
     fileList.appendChild(fileItem);
 });
+
 
