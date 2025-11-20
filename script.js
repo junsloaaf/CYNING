@@ -273,19 +273,3 @@ pdfUploadArea.addEventListener('drop', (e) => {
         alert('Hanya file PDF yang diizinkan!');
     }
 });
-
-const closePdfViewerBtn = document.getElementById('close-pdf-viewer');
-const pdfViewerModal = document.getElementById('pdf-viewer-modal');
-const pdfFrame = document.getElementById('pdf-frame');
-
-closePdfViewerBtn.addEventListener('click', () => {
-  pdfViewerModal.style.display = 'none';
-  pdfFrame.src = '';
-});
-
-window.addEventListener('click', (e) => {
-  if (e.target === pdfViewerModal) {
-    pdfViewerModal.style.display = 'none';
-    pdfFrame.src = '';
-  }
-});
