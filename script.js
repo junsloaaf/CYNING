@@ -274,162 +274,18 @@ pdfUploadArea.addEventListener('drop', (e) => {
     }
 });
 
-function uploadPDF(file) {
-  const fileItem = document.createElement('div');
-  fileItem.className = 'file-item';
+const closePdfViewerBtn = document.getElementById('close-pdf-viewer');
+const pdfViewerModal = document.getElementById('pdf-viewer-modal');
+const pdfFrame = document.getElementById('pdf-frame');
 
-  const fileSize = (file.size / (1024 * 1024)).toFixed(2); // MB
-
-  // Buat URL objek dari file PDF agar bisa diembed / dilihat di iframe
-  const fileURL = URL.createObjectURL(file); // pakai Web File API :contentReference[oaicite:0]{index=0}
-
-  fileItem.innerHTML = `
-    <i class="fas fa-file-pdf"></i>
-    <div class="file-info">
-      <h5>${file.name}</h5>
-      <p>${fileSize} MB • Baru saja diupload</p>
-    </div>
-    <div class="file-actions">
-      <button class="file-action view-btn"><i class="fas fa-eye"></i></button>
-      <button class="file-action delete-btn"><i class="fas fa-trash"></i></button>
-    </div>
-  `;
-
-  const viewBtn = fileItem.querySelector('.view-btn');
-  const deleteBtn = fileItem.querySelector('.delete-btn');
-
-  viewBtn.addEventListener('click', () => {
-    // Ketika klik "view", buka modal viewer PDF dan set iframe src ke URL objek
-    const pdfViewerModal = document.getElementById('pdf-viewer-modal');
-    const pdfFrame = document.getElementById('pdf-frame');
-    const pdfViewerTitle = document.getElementById('pdf-viewer-title');
-
-    pdfFrame.src = fileURL;
-    pdfViewerTitle.textContent = file.name;
-    pdfViewerModal.style.display = 'flex';
-  });
-
-  deleteBtn.addEventListener('click', () => {
-    if (confirm(`Hapus file ${file.name}?`)) {
-      URL.revokeObjectURL(fileURL); // bersihkan URL objek karena tidak dipakai lagi
-      fileItem.remove();
-    }
-  });
-
-  fileList.appendChild(fileItem);
-
-  // Mengosongkan input file agar bisa upload file yang sama lagi jika ingin
-  pdfUpload.value = '';
-}
-
-
-const subjectUploadAreas = document.querySelectorAll('.upload-area');
-const subjectPDFUploads = document.querySelectorAll('.pdf-upload');
-
-subjectUploadAreas.forEach((area, index) => {
-    area.addEventListener('click', () => {
-        subjectPDFUploads[index].click();
-    });
-    
-    area.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        area.style.borderColor = '#4361ee';
-        area.style.backgroundColor = '#f8faff';
-    });
-    
-    area.addEventListener('dragleave', () => {
-        area.style.borderColor = '#ddd';
-        area.style.backgroundColor = 'transparent';
-    });
-    
-    area.addEventListener('drop', (e) => {
-        e.preventDefault();
-        area.style.borderColor = '#ddd';
-        area.style.backgroundColor = 'transparent';
-        
-        const file = e.dataTransfer.files[0];
-        if (file && file.type === 'application/pdf') {
-            subjectPDFUploads[index].files = e.dataTransfer.files;
-            handleSubjectPDFUpload(file, area);
-        } else {
-            alert('Hanya file PDF yang diizinkan!');
-        }
-    });
+closePdfViewerBtn.addEventListener('click', () => {
+  pdfViewerModal.style.display = 'none';
+  pdfFrame.src = '';
 });
 
-subjectPDFUploads.forEach(upload => {
-    upload.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const area = upload.closest('.upload-area');
-            handleSubjectPDFUpload(file, area);
-        }
-    });
+window.addEventListener('click', (e) => {
+  if (e.target === pdfViewerModal) {
+    pdfViewerModal.style.display = 'none';
+    pdfFrame.src = '';
+  }
 });
-
-function handleSubjectPDFUpload(file, area) {
-    const subjectName = area.closest('.material-section').id;
-    const subjectDisplayName = document.querySelector(`[data-subject="${subjectName}"]`).textContent;
-    
-    alert(`File "${file.name}" berhasil diupload untuk mata pelajaran ${subjectDisplayName}!`);
-    
-}
-
-updateTimerDisplay();
-renderTasks();
-
-if (tasks.length > 0) {
-    const firstUncompleted = tasks.find(t => !t.completed);
-    if (firstUncompleted) {
-        currentTask.textContent = firstUncompleted.text;
-    }
-}
-
-if (tasks.length === 0) {
-    tasks = [
-        { text: 'Mengerjakan tugas', completed: false, createdAt: new Date().toISOString() },
-        { text: 'Mempersiapkan ulangan', completed: true, createdAt: new Date().toISOString() }
-    ];
-    saveTasks();
-    renderTasks();
-}
-
-const sampleFiles = [
-    { name: 'Rangkuman Matematika Integral.pdf', size: '2.4' },
-    { name: 'Soal Latihan Fisika Gelombang.pdf', size: '1.8' }
-];
-
-sampleFiles.forEach(file => {
-    const fileItem = document.createElement('div');
-    fileItem.className = 'file-item';
-    
-    fileItem.innerHTML = `
-        <i class="fas fa-file-pdf"></i>
-        <div class="file-info">
-            <h5>${file.name}</h5>
-            <p>${file.size} MB • 2 hari yang lalu</p>
-        </div>
-        <div class="file-actions">
-            <button class="file-action view-btn"><i class="fas fa-eye"></i></button>
-            <button class="file-action delete-btn"><i class="fas fa-trash"></i></button>
-        </div>
-    `;
-    
-    const viewBtn = fileItem.querySelector('.view-btn');
-    const deleteBtn = fileItem.querySelector('.delete-btn');
-    
-    viewBtn.addEventListener('click', () => {
-        alert(`Membuka file: ${file.name}\n\nMasih dalam tahap simulasi. Dalam aplikasi nyata, file PDF akan ditampilkan di sini.`);
-    });
-    
-    deleteBtn.addEventListener('click', () => {
-        if (confirm(`Hapus file ${file.name}?`)) {
-            fileItem.remove();
-        }
-    });
-    
-    fileList.appendChild(fileItem);
-});
-
-
-
