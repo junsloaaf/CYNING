@@ -699,38 +699,30 @@ footer {
     color: var(--primary);
 }
 
-#pdf-viewer-modal {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 2000;
-  align-items: center;
-  justify-content: center;
+/* Container iframe agar responsive dan besar */
+.pdf-viewer-container {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-top: 75%; /* bisa ubah sesuai rasio, mis. 75% untuk rasio ~4:3 */
 }
 
+/* Style iframe supaya menempati seluruh kontainer */
+.pdf-viewer-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Modal PDF viewer: biar lebih besar */
 #pdf-viewer-modal .modal-content {
-  position: relative;
-  background: white;
-  border-radius: 10px;
+  width: 90%;     /* ambil 90% lebar layar */
+  height: 85vh;   /* tinggi 85% dari viewport */
+  max-width: 1200px; /* maksimal lebar, bisa kamu sesuaikan */
+  max-height: 90vh;
+  padding: 0;
   overflow: hidden;
 }
-
-#pdf-viewer-modal .modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 15px;
-  background: var(--primary);
-  color: white;
-}
-
-#pdf-viewer-modal .close-modal {
-  font-size: 1.5rem;
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-}
-
