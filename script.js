@@ -1,275 +1,303 @@
+document.addEventListener('DOMContentLoaded', () => {
+  // ===== Timer =====
+  let timerInterval;
+  let timeLeft = 25 * 60;
+  let isRunning = false;
 
-let timerInterval;
-let timeLeft = 25 * 60; // 25 minutes in seconds
-let isRunning = false;
+  const timerDisplay = document.querySelector('.timer-display');
+  const startBtn = document.getElementById('start-timer');
+  const pauseBtn = document.getElementById('pause-timer');
+  const resetBtn = document.getElementById('reset-timer');
+  const presetBtns = document.querySelectorAll('.preset-btn');
+  const activeTimer = document.getElementById('active-timer');
+  const timerStatus = document.getElementById('timer-status');
+  const currentTask = document.getElementById('current-task');
 
-const timerDisplay = document.querySelector('.timer-display');
-const startBtn = document.getElementById('start-timer');
-const pauseBtn = document.getElementById('pause-timer');
-const resetBtn = document.getElementById('reset-timer');
-const presetBtns = document.querySelectorAll('.preset-btn');
-const activeTimer = document.getElementById('active-timer');
-const timerStatus = document.getElementById('timer-status');
-const currentTask = document.getElementById('current-task');
-
-const openPdfButtons = document.querySelectorAll('.btn-open-pdf');
-const pdfViewerModal = document.getElementById('pdf-viewer-modal');
-const pdfFrame = document.getElementById('pdf-frame');
-const closePdfViewerBtn = document.getElementById('close-pdf-viewer');
-const pdfViewerTitle = document.getElementById('pdf-viewer-title');
-
-openPdfButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    const pdfUrl = btn.getAttribute('data-pdf-url');
-    const title = btn.closest('.material-item').querySelector('h5').innerText;
-    pdfFrame.src = pdfUrl;
-    pdfViewerTitle.textContent = title;
-    pdfViewerModal.style.display = 'flex';
-  });
-});
-
-closePdfViewerBtn.addEventListener('click', () => {
-  pdfViewerModal.style.display = 'none';
-  pdfFrame.src = '';
-});
-
-window.addEventListener('click', (e) => {
-  if (e.target === pdfViewerModal) {
-    pdfViewerModal.style.display = 'none';
-    pdfFrame.src = '';
-  }
-});
-
-
-function updateTimerDisplay() {
+  function updateTimerDisplay() {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
-    timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    timerStatus.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-}
+    timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds
+      .toString()
+      .padStart(2, '0')}`;
+    timerStatus.textContent = `${minutes.toString().padStart(2, '0')}:${seconds
+      .toString()
+      .padStart(2, '0')}`;
+  }
 
-function startTimer() {
+  function startTimer() {
     if (isRunning) return;
-    
     isRunning = true;
     activeTimer.style.display = 'flex';
-    
     timerInterval = setInterval(() => {
-        timeLeft--;
-        updateTimerDisplay();
-        
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            isRunning = false;
-            alert('Waktu belajar telah habis! Saatnya istirahat sejenak.');
-            activeTimer.style.display = 'none';
-            // Play notification sound if needed
-        }
+      timeLeft--;
+      updateTimerDisplay();
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        isRunning = false;
+        alert('Waktu belajar telah habis! Saatnya istirahat sejenak.');
+        activeTimer.style.display = 'none';
+      }
     }, 1000);
-}
+  }
 
-function pauseTimer() {
+  function pauseTimer() {
     clearInterval(timerInterval);
     isRunning = false;
-}
+  }
 
-function resetTimer() {
+  function resetTimer() {
     clearInterval(timerInterval);
     isRunning = false;
-    // Reset to current preset
     const activePreset = document.querySelector('.preset-btn.active');
     timeLeft = parseInt(activePreset.dataset.time) * 60;
     updateTimerDisplay();
     activeTimer.style.display = 'none';
-}
+  }
 
-startBtn.addEventListener('click', startTimer);
-pauseBtn.addEventListener('click', pauseTimer);
-resetBtn.addEventListener('click', resetTimer);
+  startBtn.addEventListener('click', startTimer);
+  pauseBtn.addEventListener('click', pauseTimer);
+  resetBtn.addEventListener('click', resetTimer);
 
-presetBtns.forEach(btn => {
+  presetBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
-        presetBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        timeLeft = parseInt(btn.dataset.time) * 60;
-        updateTimerDisplay();
-        
-        if (isRunning) {
-            pauseTimer();
-            startTimer();
-        }
+      presetBtns.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      timeLeft = parseInt(btn.dataset.time) * 60;
+      updateTimerDisplay();
+      if (isRunning) {
+        pauseTimer();
+        startTimer();
+      }
     });
-});
+  });
 
-const taskInput = document.getElementById('task-input');
-const addTaskBtn = document.getElementById('add-task');
-const taskList = document.getElementById('task-list');
-let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+  updateTimerDisplay();
 
-function renderTasks() {
+  // ===== Tugas / To-Do List =====
+  const taskInput = document.getElementById('task-input');
+  const addTaskBtn = document.getElementById('add-task');
+  const taskList = document.getElementById('task-list');
+  let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+  function saveTasks() {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }
+
+  function renderTasks() {
     taskList.innerHTML = '';
-    
     tasks.forEach((task, index) => {
-        const li = document.createElement('li');
-        li.className = `task-item ${task.completed ? 'completed' : ''}`;
-        
-        li.innerHTML = `
-            <div class="task-checkbox ${task.completed ? 'checked' : ''}">
-                ${task.completed ? '<i class="fas fa-check"></i>' : ''}
-            </div>
-            <div class="task-text">${task.text}</div>
-            <div class="task-actions">
-                <button class="task-action edit-btn"><i class="fas fa-edit"></i></button>
-                <button class="task-action delete-btn"><i class="fas fa-trash"></i></button>
-            </div>
-        `;
-        
-        const checkbox = li.querySelector('.task-checkbox');
-        const editBtn = li.querySelector('.edit-btn');
-        const deleteBtn = li.querySelector('.delete-btn');
-        
-        checkbox.addEventListener('click', () => {
-            tasks[index].completed = !tasks[index].completed;
-            saveTasks();
-            renderTasks();
-        });
-        
-        editBtn.addEventListener('click', () => {
-            const newText = prompt('Edit tugas:', tasks[index].text);
-            if (newText && newText.trim() !== '') {
-                tasks[index].text = newText.trim();
-                saveTasks();
-                renderTasks();
-            }
-        });
-        
-        deleteBtn.addEventListener('click', () => {
-            if (confirm('Hapus tugas ini?')) {
-                tasks.splice(index, 1);
-                saveTasks();
-                renderTasks();
-            }
-        });
-        
-        taskList.appendChild(li);
-    });
-    
-    document.querySelector('.stat-value').textContent = tasks.filter(t => !t.completed).length;
-}
+      const li = document.createElement('li');
+      li.className = `task-item ${task.completed ? 'completed' : ''}`;
+      li.innerHTML = `
+        <div class="task-checkbox ${task.completed ? 'checked' : ''}">
+          ${task.completed ? '<i class="fas fa-check"></i>' : ''}
+        </div>
+        <div class="task-text">${task.text}</div>
+        <div class="task-actions">
+          <button class="task-action edit-btn"><i class="fas fa-edit"></i></button>
+          <button class="task-action delete-btn"><i class="fas fa-trash"></i></button>
+        </div>
+      `;
 
-function addTask() {
+      const checkbox = li.querySelector('.task-checkbox');
+      const editBtn = li.querySelector('.edit-btn');
+      const deleteBtn = li.querySelector('.delete-btn');
+
+      checkbox.addEventListener('click', () => {
+        tasks[index].completed = !tasks[index].completed;
+        saveTasks();
+        renderTasks();
+      });
+
+      editBtn.addEventListener('click', () => {
+        const newText = prompt('Edit tugas:', tasks[index].text);
+        if (newText && newText.trim() !== '') {
+          tasks[index].text = newText.trim();
+          saveTasks();
+          renderTasks();
+        }
+      });
+
+      deleteBtn.addEventListener('click', () => {
+        if (confirm('Hapus tugas ini?')) {
+          tasks.splice(index, 1);
+          saveTasks();
+          renderTasks();
+        }
+      });
+
+      taskList.appendChild(li);
+    });
+  }
+
+  function addTask() {
     const text = taskInput.value.trim();
     if (text === '') return;
-    
-    tasks.push({
-        text: text,
-        completed: false,
-        createdAt: new Date().toISOString()
-    });
-    
+    tasks.push({ text, completed: false, createdAt: new Date().toISOString() });
     saveTasks();
     renderTasks();
     taskInput.value = '';
-}
+  }
 
-function saveTasks() {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-}
-
-addTaskBtn.addEventListener('click', addTask);
-taskInput.addEventListener('keypress', (e) => {
+  addTaskBtn.addEventListener('click', addTask);
+  taskInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') addTask();
-});
+  });
 
-const materialsModal = document.getElementById('materials-modal');
-const pdfModal = document.getElementById('pdf-modal');
-const openMaterialsBtn = document.getElementById('open-materials');
-const openPdfBtn = document.getElementById('open-pdf');
-const closeModalBtns = document.querySelectorAll('.close-modal');
+  renderTasks();
 
-function openModal(modal) {
-    modal.style.display = 'flex';
-}
+  // ===== Modal Materi & Navigasi Materi =====
+  const materialsModal = document.getElementById('materials-modal');
+  const pdfModal = document.getElementById('pdf-modal');
+  const openMaterialsBtn = document.getElementById('open-materials');
+  const openPdfBtn = document.getElementById('open-pdf');
+  const closeModalBtns = document.querySelectorAll('.close-modal');
 
-function closeModal(modal) {
-    modal.style.display = 'none';
-}
+  openMaterialsBtn.addEventListener('click', () => {
+    materialsModal.style.display = 'flex';
+  });
+  openPdfBtn.addEventListener('click', () => {
+    pdfModal.style.display = 'flex';
+  });
 
-openMaterialsBtn.addEventListener('click', () => openModal(materialsModal));
-openPdfBtn.addEventListener('click', () => openModal(pdfModal));
-
-closeModalBtns.forEach(btn => {
+  closeModalBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
-        const modal = btn.closest('.modal');
-        closeModal(modal);
+      const modal = btn.closest('.modal');
+      if (modal) modal.style.display = 'none';
     });
-});
+  });
 
-window.addEventListener('click', (e) => {
+  window.addEventListener('click', (e) => {
     if (e.target.classList.contains('modal')) {
-        closeModal(e.target);
+      e.target.style.display = 'none';
     }
-});
+  });
 
-const subjectItems = document.querySelectorAll('.subject-list li');
-const materialSections = document.querySelectorAll('.material-section');
-
-subjectItems.forEach(item => {
+  const subjectItems = document.querySelectorAll('.subject-list li');
+  const materialSections = document.querySelectorAll('.material-section');
+  subjectItems.forEach((item) => {
     item.addEventListener('click', () => {
-        subjectItems.forEach(i => i.classList.remove('active'));
-        materialSections.forEach(s => s.classList.remove('active'));
-        
-        item.classList.add('active');
-        
-        const subjectId = item.getAttribute('data-subject');
-        document.getElementById(subjectId).classList.add('active');
+      subjectItems.forEach((i) => i.classList.remove('active'));
+      materialSections.forEach((s) => s.classList.remove('active'));
+      item.classList.add('active');
+      const subjectId = item.getAttribute('data-subject');
+      const targetSection = document.getElementById(subjectId);
+      if (targetSection) targetSection.classList.add('active');
     });
-});
+  });
 
-const pdfUpload = document.getElementById('pdf-upload');
-const uploadPdfBtn = document.getElementById('upload-pdf-btn');
-const pdfUploadArea = document.getElementById('pdf-upload-area');
-const fileList = document.getElementById('file-list');
+  // ===== Viewer PDF Materi =====
+  const openPdfButtons = document.querySelectorAll('.btn-open-pdf');
+  const pdfViewerModal = document.getElementById('pdf-viewer-modal');
+  const pdfFrame = document.getElementById('pdf-frame');
+  const closePdfViewerBtn = document.getElementById('close-pdf-viewer');
+  const pdfViewerTitle = document.getElementById('pdf-viewer-title');
 
-uploadPdfBtn.addEventListener('click', () => {
-    pdfUpload.click();
-});
+  openPdfButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const pdfUrl = btn.getAttribute('data-pdf-url');
+      const titleEl = btn.closest('.material-item')?.querySelector('h5');
+      const title = titleEl ? titleEl.innerText : 'Materi PDF';
+      if (pdfUrl) {
+        pdfFrame.src = pdfUrl;
+        pdfViewerTitle.textContent = title;
+        pdfViewerModal.style.display = 'flex';
+      } else {
+        alert('URL PDF belum diset.');
+      }
+    });
+  });
 
-pdfUploadArea.addEventListener('click', () => {
-    pdfUpload.click();
-});
+  closePdfViewerBtn.addEventListener('click', () => {
+    pdfViewerModal.style.display = 'none';
+    pdfFrame.src = '';
+  });
 
-pdfUpload.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        if (file.type === 'application/pdf') {
-            uploadPDF(file);
-        } else {
-            alert('Hanya file PDF yang diizinkan!');
-        }
+  window.addEventListener('click', (e) => {
+    if (e.target === pdfViewerModal) {
+      pdfViewerModal.style.display = 'none';
+      pdfFrame.src = '';
     }
-});
+  });
 
-pdfUploadArea.addEventListener('dragover', (e) => {
+  // ===== Upload PDF =====
+  const pdfUpload = document.getElementById('pdf-upload');
+  const uploadPdfBtn = document.getElementById('upload-pdf-btn');
+  const pdfUploadArea = document.getElementById('pdf-upload-area');
+  const fileList = document.getElementById('file-list');
+
+  uploadPdfBtn.addEventListener('click', () => pdfUpload.click());
+  pdfUploadArea.addEventListener('click', () => pdfUpload.click());
+
+  pdfUpload.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file && file.type === 'application/pdf') {
+      handleUpload(file);
+    } else {
+      alert('Hanya file PDF yang diizinkan!');
+    }
+  });
+
+  pdfUploadArea.addEventListener('dragover', (e) => {
     e.preventDefault();
     pdfUploadArea.style.borderColor = '#4361ee';
     pdfUploadArea.style.backgroundColor = '#f8faff';
-});
+  });
 
-pdfUploadArea.addEventListener('dragleave', () => {
+  pdfUploadArea.addEventListener('dragleave', () => {
     pdfUploadArea.style.borderColor = '#ddd';
     pdfUploadArea.style.backgroundColor = 'transparent';
-});
+  });
 
-pdfUploadArea.addEventListener('drop', (e) => {
+  pdfUploadArea.addEventListener('drop', (e) => {
     e.preventDefault();
-    pdfUploadArea.style.borderColor = '#ddd';
-    pdfUploadArea.style.backgroundColor = 'transparent';
-    
     const file = e.dataTransfer.files[0];
     if (file && file.type === 'application/pdf') {
-        uploadPDF(file);
+      handleUpload(file);
     } else {
-        alert('Hanya file PDF yang diizinkan!');
+      alert('Hanya file PDF yang diizinkan!');
     }
-});
+    pdfUploadArea.style.borderColor = '#ddd';
+    pdfUploadArea.style.backgroundColor = 'transparent';
+  });
+
+  function handleUpload(file) {
+    const fileItem = document.createElement('div');
+    fileItem.className = 'file-item';
+    const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+    const fileURL = URL.createObjectURL(file); // pakai Object URL dari File API :contentReference[oaicite:0]{index=0}
+
+    fileItem.innerHTML = `
+      <i class="fas fa-file-pdf"></i>
+      <div class="file-info">
+        <h5>${file.name}</h5>
+        <p>${fileSize} MB • Baru saja diupload</p>
+      </div>
+      <div class="file-actions">
+        <button class="file-action view-btn"><i class="fas fa-eye"></i></button>
+        <button class="file-action delete-btn"><i class="fas fa-trash"></i></button>
+      </div>
+    `;
+
+    const viewBtn = fileItem.querySelector('.view-btn');
+    const deleteBtn = fileItem.querySelector('.delete-btn');
+
+    viewBtn.addEventListener('click', () => {
+      pdfFrame.src = fileURL;
+      pdfViewerTitle.textContent = file.name;
+      pdfViewerModal.style.display = 'flex';
+    });
+
+    deleteBtn.addEventListener('click', () => {
+      if (confirm(`Hapus file ${file.name}?`)) {
+        URL.revokeObjectURL(fileURL);
+        fileItem.remove();
+      }
+    });
+
+    fileList.appendChild(fileItem);
+    pdfUpload.value = '';
+    alert(`File "${file.name}" berhasil diupload!`);
+  }
+
+}); // end DOMContentLoaded
